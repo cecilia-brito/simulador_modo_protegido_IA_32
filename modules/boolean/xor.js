@@ -1,0 +1,1 @@
+//XOR DST, SRC      Boolean Exclusive OR SRC to DST

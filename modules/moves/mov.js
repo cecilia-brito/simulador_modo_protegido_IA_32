@@ -1,0 +1,1 @@
+//MOV DST, SRC        Move SRC to DST
