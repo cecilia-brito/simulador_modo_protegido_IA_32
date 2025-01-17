@@ -1,0 +1,36 @@
+*{
+    box-sizing: border-box;
+}
+
+.box{
+    border: 1px solid black;
+    width: auto;
+}
+
+.container{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.container__wrapper{
+    width: 100%;
+    padding: 0 2rem;
+    overflow-wrap: break-word;
+    display: flex;
+}
+
+.container__wrapper__code{
+    width: 100%;
+    max-width: 40vw;
+    overflow-wrap: break-word;
+    background-color: #eee;
+    border-radius: 3px;
+    font-family: courier, monospace;
+    padding: 4px 8px;
+}
+
+.container__registers{
+    width: 100%;
+}

@@ -19,3 +19,6 @@
 // XX representa o endereço ou label
 
 // que indica o inicio do loop
+
+const cmp = [];
+export default cmp;

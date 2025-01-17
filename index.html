@@ -4,7 +4,33 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Simulador de Instruções Assembly x86</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <div class="container">
+      <pre class="container__wrapper"><code class="container__wrapper__code" contenteditable="true" spellcheck="false"></code></pre>
+      <div class="container__registers">
+        <h2>Gerais</h2>
+        <div class="box">eax <span id="eax"></span></div>
+        <div class="box">ebx <span id="ebx"></span></div>
+        <div class="box">ecx <span id="ecx"></span></div>
+        <div class="box">edx <span id="edx"></span></div>
+        
+        <br/>
+        <h2>Seletor de segmento</h2>
+        <div class="box">cs <span id="cs"></span></div>
+        <div class="box">ds <span id="ds"></span></div>
+        <div class="box">ss <span id="ss"></span></div>
+        
+        <br/>
+        <h2>Offset</h2>
+        <div class="box">ip <span id="ip"></span></div>
+        <div class="box">sp <span id="sp"></span></div>
+        <div class="box">bp <span id="bp"></span></div>
+        <div class="box">si <span id="si"></span></div>
+        <div class="box">di <span id="di"></span></div>
+      </div>
+    </div>
   </body>
+  <script src="./main.js" type="module"></script>
 </html>

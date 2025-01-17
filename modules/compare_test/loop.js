@@ -4,3 +4,5 @@
 // Na instrução de jump condicional
 
 // Jxx
+const loop = [];
+export default loop;
