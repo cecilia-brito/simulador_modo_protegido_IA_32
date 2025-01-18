@@ -8,7 +8,9 @@
   </head>
   <body>
     <div class="container">
-      <pre class="container__wrapper"><code class="container__wrapper__code" contenteditable="true" spellcheck="false"></code></pre>
+      <pre class="container__wrapper">
+        <code id="code" class="container__wrapper__code" contenteditable="true" spellcheck="false"></code>
+      </pre>
       <div class="container__registers">
         <h2>Gerais</h2>
         <div class="box">eax <span id="eax"></span></div>
@@ -30,7 +32,21 @@
         <div class="box">si <span id="si"></span></div>
         <div class="box">di <span id="di"></span></div>
       </div>
+      <div class="container__bus">
+        <p class="container__bus__info"></p>
+        <div class="container__bus__arrow">&#x2B1A</div>
+      </div>
+      <div class="container__ram">
+        <form class="container__ram__form">
+          <input type="search" name="" id="">
+          <button></button>
+        </form>
+        <ul class="container__ram__table" id="ram">
+        </ul>
+      </div>
     </div>
+    <button id="clock">start</button>
+    <button id="click">end</button>
   </body>
   <script src="./main.js" type="module"></script>
 </html>

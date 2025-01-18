@@ -1,14 +1,21 @@
 *{
     box-sizing: border-box;
+    background-color: #222;
+    color: white;
+}
+
+ul{
+    list-style: none;
 }
 
 .box{
-    border: 1px solid black;
+    border: 1px solid white;
     width: auto;
 }
 
 .container{
     width: 100%;
+    max-height: 70vh;
     display: flex;
     justify-content: space-between;
 
@@ -25,7 +32,7 @@
     width: 100%;
     max-width: 40vw;
     overflow-wrap: break-word;
-    background-color: #eee;
+    background-color: #333;
     border-radius: 3px;
     font-family: courier, monospace;
     padding: 4px 8px;
@@ -33,4 +40,17 @@
 
 .container__registers{
     width: 100%;
+}
+
+.container__bus{
+    min-height: 100%;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container__ram__table{
+    overflow-y: scroll;
+    max-height: 100%;
 }
