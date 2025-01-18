@@ -43,7 +43,7 @@ const instructionList = {
     pop,
     push,
     xcgh,
-    algo:[(line)=>line]
+    algo:[(line)=>line],
 };
 
 // Criação do objeto 
@@ -79,19 +79,40 @@ const cpu = {
     ram: Array.apply(null, Array(64000)).map(()=>0),
 };
 
-// Guardando a referência de elementos importantes
-const clockButton = document.getElementById("clock");
-const codeInput = document.getElementById("code");
-const ramTable = document.getElementById("ram");
+// Guardando a referência de elementos importantes do html
+const clockButton = document.getElementById("clock"); //botão start/tick/tock
+const codeInput = document.getElementById("code"); //local onde o usuário escreve o código
+const ramTable = document.getElementById("ram"); //tabela de registradores da ram
+const busText = document.getElementById("bus-text"); //texto descrevendo a atividade no barramento
+const busArrow = document.getElementById("bus-arrow"); //seta para o lado que as informações passam pelo barramento
 
 // Função responsável por alterar os valores dos registradores cujo valor é apresentado ao usuário.
 function setVisualRegister(type, register, value){
-    cpu[type+"Register"][register] = value;
+    cpu[type==="ram"?"ram":type+"Register"][register] = value;
     let valueTo16 = value.toString(16);
     valueTo16 = '0'.repeat(Math.max(0,4-valueTo16.length))+valueTo16;
-    document.getElementById(register).textContent = valueTo16;
+    document.getElementById(`${type==="ram"?"ram-":""}${register}`).textContent = valueTo16;
 };
 
+// Função responsável por alterar visualmente a área entre os dados do registradores e a tabela da ram.
+function cpuXram(desc, type, data){
+    busText.textContent = desc;
+    switch(type){
+        case "request":
+            busArrow.innerHTML = "&#x2192"; //seta pra direita
+            break;
+        case "get":
+            busArrow.innerHTML = "&#x2190"; //seta pra esquerda
+            break;
+        default:
+            busArrow.innerHTML = "&#x2B1A"; //quadrado pontilhado(sujeito a mudança)
+            break;
+    };
+    if(data){
+        const ramInstance = document.getElementById(`ram-${data}`)
+        ramInstance.scrollIntoView();
+    };
+};
 
 async function start(){
     // Essa parte será nosso "assembler". Aqui será checada cada linha do código para conferir se ela é válida.
@@ -101,28 +122,30 @@ async function start(){
             const validLine = checkLine(singleLine);
             if(validLine){
                 return validLine;
-            }
+            };
             throw new Error();
         })
         await changeRamEdit(false);
         cpu.controlUnity.code = lineList;
         cpu.controlUnity.line = lineList[0];
         cpu.controlUnity.instruction = lineList[0][0];
+        return true;
     }catch(e){
-        console.log(e)
+        console.log(e);
         codeInput.contentEditable = true;
-        alert("Código inadequado")
-    }
+        alert("Código inadequado");
+        return false;
+    };
 };
 
-function clock(){
+async function clock(){
     if(clockButton.textContent.includes("start")){
-        start(); 
-        clockButton.textContent = "tick";
+        const result = await start(); 
+        if(result)clockButton.textContent = "tick";
         return;
     }
     const control = cpu.controlUnity;
-    let instructionResult = instructionList[control.instruction][control.step](setVisualRegister, cpu);
+    let instructionResult = instructionList[control.instruction][control.step](setVisualRegister, cpuXram, cpu);
     clockButton.textContent = clockButton.textContent == "tick"? "tock":"tick";
     if(instructionResult){
         control.line = control.code[cpu.offsetRegister.ip];
@@ -144,7 +167,7 @@ async function changeRamEdit(edit){
         let num = cpu.ram.length;
         for(let i = 0; i < num; i++){document.getElementById(`ram-${i}`).contentEditable = edit;}
     });
-}
+};
 
 //#x2190 left
 //#x2192 right
