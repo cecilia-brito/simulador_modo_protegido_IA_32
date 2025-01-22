@@ -233,7 +233,7 @@ async function clock(){
             return;
         }
         const control = cpu.controlUnity;
-        if(control.instruction = "hlt"){
+        if(control.instruction === "hlt"){
             end();
             return;
         }
@@ -259,6 +259,13 @@ async function end(){
     codeInput.contentEditable = true;
     setTableButton.disabled = false;
     clockButton.textContent = "start";
+    cpu.controlUnity = {
+        instruction: "",
+        step: 0,
+        code: [],
+        line: [],
+    }
+    cpuXram("", "", 0);
 };
 document.getElementById("click").onclick = end;
 
