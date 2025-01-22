@@ -4,7 +4,78 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Simulador de Instruções Assembly x86</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <div class="container">
+      <pre class="container__wrapper">
+        <code id="code" class="container__wrapper__code" contenteditable="true" spellcheck="false"></code>
+      </pre>
+      <div class="container__registers">
+        <h2>Gerais</h2>
+        <div class="box">eax <span id="eax"></span></div>
+        <div class="box">ebx <span id="ebx"></span></div>
+        <div class="box">ecx <span id="ecx"></span></div>
+        <div class="box">edx <span id="edx"></span></div>
+        
+        <br/>
+        <h2>Seletor de segmento</h2>
+        <div class="box">cs <span id="cs"></span></div>
+        <div class="box">ds <span id="ds"></span></div>
+        <div class="box">ss <span id="ss"></span></div>
+        
+        <br/>
+        <h2>Offset</h2>
+        <div class="box">ip <span id="ip"></span></div>
+        <div class="box">sp <span id="sp"></span></div>
+        <div class="box">bp <span id="bp"></span></div>
+        <div class="box">si <span id="si"></span></div>
+        <div class="box">di <span id="di"></span></div>
+      </div>
+      <div class="container__bus">
+        <p class="container__bus__info" id="bus-text"></p>
+        <div class="container__bus__arrow" id="bus-arrow">&#x2B1A</div>
+      </div>
+      <div class="container__ram">
+        <form class="container__ram__form" id="search-ram-form">
+          <input type="text" id="hex_code" name="hex_code" pattern="(10x|2x)?[0-9a-fA-F]+" title="indice de endereço" placeholder="XXX | 10xXXX | 2xXXX">
+          <button>pesquisar</button>
+        </form>
+        <ul class="container__ram__table" id="ram">
+        </ul>
+      </div>
+    </div>
+    <button id="clock">start</button>
+    <button id="click">end</button>
+    <form class="segment-form" id="segment-form">
+      <table id="segment-table">
+        <tr>
+        <th>Seletor</th>
+        <th>end. base</th>
+        <th>end. limite</th>
+        <th>acesso</th>
+        </tr>
+        <tr>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{4}" value="0001"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00000000"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00000FFF"></td>
+          <td><input type="text" name="" id="" required pattern="[0-3]" value="3"></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{4}" value="0002"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00001000"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00001FFF"></td>
+          <td><input type="text" name="" id="" required pattern="[0-3]" value="3"></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{4}" value="0003"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00002000"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00002FFF"></td>
+          <td><input type="text" name="" id="" required pattern="[0-3]" value="3"></td>
+        </tr>
+      </table>
+      <button id="set-table-button">set</button>
+    </form>
   </body>
+  <script src="./main.js" type="module"></script>
 </html>
