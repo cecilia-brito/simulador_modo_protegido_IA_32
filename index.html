@@ -37,9 +37,9 @@
         <div class="container__bus__arrow" id="bus-arrow">&#x2B1A</div>
       </div>
       <div class="container__ram">
-        <form class="container__ram__form">
-          <input type="search" name="" id="">
-          <button></button>
+        <form class="container__ram__form" id="search-ram-form">
+          <input type="text" id="hex_code" name="hex_code" pattern="(10x|2x)?[0-9a-fA-F]+" title="indice de endereço" placeholder="XXX | 10xXXX | 2xXXX">
+          <button>pesquisar</button>
         </form>
         <ul class="container__ram__table" id="ram">
         </ul>
@@ -47,6 +47,35 @@
     </div>
     <button id="clock">start</button>
     <button id="click">end</button>
+    <form id="segment-form">
+      <table id="segment-table">
+        <tr>
+        <th>Seletor</th>
+        <th>end. base</th>
+        <th>end. limite</th>
+        <th>acesso</th>
+        </tr>
+        <tr>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{4}" value="0001"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00000000"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00000FFF"></td>
+          <td><input type="text" name="" id="" required pattern="[0-3]" value="3"></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{4}" value="0002"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00001000"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00001FFF"></td>
+          <td><input type="text" name="" id="" required pattern="[0-3]" value="3"></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{4}" value="0003"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00002000"></td>
+          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00002FFF"></td>
+          <td><input type="text" name="" id="" required pattern="[0-3]" value="3"></td>
+        </tr>
+      </table>
+      <button id="set-table-button">set</button>
+    </form>
   </body>
   <script src="./main.js" type="module"></script>
 </html>

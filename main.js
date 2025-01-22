@@ -76,7 +76,24 @@ const cpu = {
         code: [],
         line: [],
     },
-    ram: Array.apply(null, Array(64000)).map(()=>0),
+    segmentTable:{
+        "0001":{
+            base:0x0000,
+            limit:0x0FFF,
+            access:0b11,
+        },
+        "0002":{
+            base:0x1000,
+            limit:0x1FFF,
+            access:0b11,
+        },
+        "0003":{
+            base:0x2000,
+            limit:0x2FFF,
+            access:0b11,
+        },
+    },
+    ram: Array.apply(null, Array(16**4)).map(()=>0),
 };
 
 // Guardando a referência de elementos importantes do html
@@ -85,13 +102,28 @@ const codeInput = document.getElementById("code"); //local onde o usuário escre
 const ramTable = document.getElementById("ram"); //tabela de registradores da ram
 const busText = document.getElementById("bus-text"); //texto descrevendo a atividade no barramento
 const busArrow = document.getElementById("bus-arrow"); //seta para o lado que as informações passam pelo barramento
+const searchRamForm = document.getElementById("search-ram-form"); //formulário para busca de posição na ram
+const segmentForm = document.getElementById("segment-form"); //elemento formulário de segmentos
+const segmentTable = document.getElementById("segment-table"); //tabela de segmentos
+const setTableButton = document.getElementById("set-table-button"); //botão que define os novos valores da tabela
 
 // Função responsável por alterar os valores dos registradores cujo valor é apresentado ao usuário.
 function setVisualRegister(type, register, value){
-    cpu[type==="ram"?"ram":type+"Register"][register] = value;
-    let valueTo16 = value.toString(16);
-    valueTo16 = '0'.repeat(Math.max(0,4-valueTo16.length))+valueTo16;
-    document.getElementById(`${type==="ram"?"ram-":""}${register}`).textContent = valueTo16;
+    if(type === "ram"){
+        cpu.ram[register] = value;
+        for(let i = 0; i < 4; i++){
+            const resto = value%(16*16);
+            document.getElementById(`ram-${register}`).value = '0'.repeat(Math.max(0,2-resto.toString(16).length))+resto.toString(16);
+            value = value >> 8;
+        }
+        searchRam((register+3).toString(16));
+        
+    }else{
+        let valueTo16 = value.toString(16);
+        cpu[type+"Register"][register] = value;
+        valueTo16 = '0'.repeat(Math.max(0,(type==="segment"?4:8)-valueTo16.length))+valueTo16;
+        document.getElementById(register).textContent = valueTo16;
+    }
 };
 
 // Função responsável por alterar visualmente a área entre os dados do registradores e a tabela da ram.
@@ -118,27 +150,45 @@ async function start(){
     // Essa parte será nosso "assembler". Aqui será checada cada linha do código para conferir se ela é válida.
     try{
         codeInput.contentEditable = false;
-        const lineList = codeInput.textContent.split("\n").map(singleLine=>{
+        setTableButton.disabled = true;
+        const lineList = {}
+        codeInput.textContent.split("\n").reduce((prev,singleLine,i)=>{
             const validLine = checkLine(singleLine);
             if(validLine){
-                return validLine;
+                lineList[prev] = {
+                    number:i,
+                    line:validLine
+                };
+                return prev+4*validLine.length;
             };
-            throw new Error();
-        })
+            //TODO: mudar o loop para que não seja necessário pará-lo dessa forma
+            console.log(singleLine);
+            throw new Error(i);
+        }, 0)
         await changeRamEdit(false);
         cpu.controlUnity.code = lineList;
-        cpu.controlUnity.line = lineList[0];
-        cpu.controlUnity.instruction = lineList[0][0];
+        cpu.controlUnity.line = lineList[0].line;
+        cpu.controlUnity.instruction = lineList[0].line[0];
+        setVisualRegister("offset", "ip", 0);
+        const ss = cpu.segmentRegister.ss.toString(16);
+        const stackSegment = cpu.segmentTable['0'.repeat(Math.max(0, 4-ss.length))+ss];
+        console.log(cpu)
+        let spValue = stackSegment.limit - stackSegment.base;
+        setVisualRegister("offset", "sp", spValue);
+        setVisualRegister("offset", "bp", spValue);
         return true;
     }catch(e){
         console.log(e);
         codeInput.contentEditable = true;
-        alert("Código inadequado");
+        setTableButton.disabled = false;
+        alert(`Código inadequado na linha ${e.message}`);
         return false;
     };
 };
 
+//Função para avançar em um ciclo de clock ou iniciar o programa.
 async function clock(){
+    //TODO: mudar o que quer que seja isso aqui
     if(clockButton.textContent.includes("start")){
         const result = await start(); 
         if(result)clockButton.textContent = "tick";
@@ -159,30 +209,86 @@ clockButton.onclick = clock;
 document.getElementById("click").onclick = async function end(){
     await changeRamEdit(true);
     codeInput.contentEditable = true;
+    setTableButton.disabled = false;
     clockButton.textContent = "start";
 };
 
+//Torna a Ram ineditável durante a execução
 async function changeRamEdit(edit){
     return Promise.resolve().then(()=>{
         let num = cpu.ram.length;
-        for(let i = 0; i < num; i++){document.getElementById(`ram-${i}`).contentEditable = edit;}
+        for(let i = 0; i < num; i++){document.getElementById(`ram-${i}`).disabled = !edit;}
     });
 };
 
-//#x2190 left
-//#x2192 right
-//&#x2B1 square
+//scrolla a tela até a posição informada da ram estar visível.
+function searchRam(input){
+    const input16 = parseInt(input, 16);
+    if(input16 !== NaN && input16 < cpu.ram.length){
+        input = input16;
+        document.getElementById(`ram-${input16}`).scrollIntoView();
+    }else{
+        alert("Endereço inválido");
+        return;
+    }
+};
+searchRamForm.lastElementChild.onclick = e=>{
+    e.preventDefault();
+    let input = searchRamForm.firstElementChild.value;
+    input = input.includes("10x")?
+        parseInt(input.slice(3)).toString(16):
+        input.includes("2x")?
+        parseInt(input.slice(2), 2).toString(16):
+        input;
+    searchRam(input);
+};
+
+
+//Função para setar valores na tabela de segmentos
+function setTableData(data){
+    const [selection, base, limit, access] = data;
+    cpu.segmentTable[selection] = {
+        base: parseInt(base,16),
+        limit: parseInt(limit,16),
+        access: parseInt(access, 10)
+    };
+};
+segmentForm.onsubmit = e=>{
+    e.preventDefault();
+    console.log(e);
+    const formRef = e.target;
+    if(segmentForm.checkValidity()){
+        for(let i = 0; i < formRef.length-1; i += 4){
+            setTableData([formRef[i].value, formRef[i+1].value, formRef[i+2].value, formRef[i+3].value])
+        }
+        console.log(cpu.segmentTable)
+    }else{
+        segmentForm.reportValidity();
+    };
+};
+
+const hexadecimalRegex = /^[0-9a-fA-F]{2}$/
+function ramEdit(e){
+    console.log(e)
+    const target = e.target;
+    const i = target.id.slice(4);
+    if(!hexadecimalRegex.test(target.value)){
+        target.value = '0'.repeat(Math.max(0,2-cpu.ram[i].toString(16).length))+cpu.ram[i].toString(16);
+    }else{
+        cpu.ram[i] = parseInt(target.value, 16);
+    }
+}
 
 //funções utilitárias
 //Aqui será feita checagem de uma singular linha.
-const codeLineRegex = /^(\w+)[\s^\n]*(( (#?\d+|\w+)[\s^\n]*((,[\s^\n]+(#?\d+|\w+)[\s^\n]*(;.*)?)|(;.*))?)|(;.*))?$/gi;
+const codeLineRegex = /^(\w+)[\s^\n]*(( ([0-9a-fA-F]{8})[\s^\n]*((,[\s^\n]+([0-9a-fA-F]{8})[\s^\n]*(;.*)?)|(;.*))?)|(;.*))?$/gi;
 function checkLine(line){
     let lineMatch = [...line.matchAll(codeLineRegex)];
     if(lineMatch.length && instructionList[lineMatch[0][1].toLowerCase()]){
         lineMatch = lineMatch[0];
         lineMatch = [lineMatch[1].toLowerCase(), lineMatch[4], lineMatch[7]];
         return instructionList[lineMatch[0]][0](lineMatch);
-    }
+    }else if(line==="")return[];
 }
 
 // Inicializando alguns registradores
@@ -191,27 +297,45 @@ setVisualRegister("geral", "ebx", 0);
 setVisualRegister("geral", "ecx", 15);
 setVisualRegister("geral", "edx", 4239);
 
-setVisualRegister("segment", "cs", 0);
-setVisualRegister("segment", "ds", 2**12);
-setVisualRegister("segment", "ss", 2**13);
+setVisualRegister("segment", "cs", 1);
+setVisualRegister("segment", "ds", 2);
+setVisualRegister("segment", "ss", 3);
 
-setVisualRegister("offset", "ip", 0);
+setVisualRegister("offset", "ip", 100);
 setVisualRegister("offset", "sp", 563);
 setVisualRegister("offset", "bp", 435);
 setVisualRegister("offset", "si", 233);
 setVisualRegister("offset", "di", 100);
 
-clockButton.disabled = true;
-(async()=>(
-    Promise.resolve().then(()=>{
-        let num = cpu.ram.length;
-        for(let i = 0; i < num; i++){
-            const newLi = document.createElement("li");
-            newLi.classList.add("box");
-            newLi.id = `ram-${i}`;
-            newLi.textContent = cpu.ram[i].toString(16);
-            newLi.contentEditable = true;
-            ramTable.appendChild(newLi);
-        }
-    })
-))().then(()=>clockButton.disabled = false);
+
+document.addEventListener("DOMContentLoaded", function() {
+    clockButton.disabled = true;
+    (async()=>(
+        Promise.resolve().then(()=>{
+            let num = cpu.ram.length;
+            for(let i = 0; i < num; i++){
+                const newLi = document.createElement("li");
+                newLi.classList.add("box");
+                newLi.classList.add("ram-item");
+
+                const newLiSpan = document.createElement("span");
+                newLiSpan.textContent = '0'.repeat(Math.max(0,8-i.toString(16).length))+i.toString(16);
+                newLiSpan.classList.add("box");
+                newLiSpan.classList.add("ram-desc");
+                newLi.appendChild(newLiSpan);
+
+                const newLiInput = document.createElement("input");
+                newLiInput.id = `ram-${i}`;
+                newLiInput.classList.add("ram-input");
+                newLiInput.value = '0'.repeat(Math.max(0,2-cpu.ram[i].toString(16).length))+cpu.ram[i].toString(16);
+                newLiInput.type = "text";
+                newLiInput.pattern = "#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?";
+                newLiInput.onchange = ramEdit;
+                newLi.appendChild(newLiInput);
+
+                ramTable.insertBefore(newLi, ramTable.firstChild);
+            }
+            document.getElementById("ram-0").scrollIntoView();
+        })
+    ))().then(()=>clockButton.disabled = false);
+}, false);
