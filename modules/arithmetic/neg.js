@@ -76,7 +76,7 @@ const neg = [
         const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
         cpuXram(
             `bus dados<br/>
-            dados: ${data}`,
+            dados: ${data.toString(16)}`,
             "get",
             linearAddress
         );
@@ -84,14 +84,19 @@ const neg = [
     },
     //step 7
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        const maxBitLenght = 2**31;
-        setVisual("geral", "eax", maxBitLenght-cpu.geralRegister.eax);
+        const eax = cpu.geralRegister.eax;
+        let twoComp = (eax>>>0).toString(2);
+        twoComp = twoComp.padStart(Math.max(0,32-twoComp.length), "0")
+            .replaceAll("0", "2")
+            .replaceAll("1", "0")
+            .replaceAll("2", "1");
+        setVisual("geral", "eax", parseInt(twoComp, 2)+1);
         const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
         const linearAddress = getLinearAddress("di");
         cpuXram(
             `bus dados<br/>
-            endereço linear = ${dataSegment.base} + ${cpu.offsetRegister.di}<br/>
-            endereço linear = ${linearAddress}<br/>
+            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
+            endereço linear = ${linearAddress.toString(16)}<br/>
             dados: ${cpu.geralRegister.eax.toString(16)}`,
             "request",
             linearAddress
