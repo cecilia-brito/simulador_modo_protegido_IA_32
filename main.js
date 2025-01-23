@@ -130,7 +130,7 @@ function setVisualRegister(type, register, value){
 
 // Função responsável por alterar visualmente a área entre os dados do registradores e a tabela da ram.
 function cpuXram(desc, type, data){
-    busText.textContent = desc;
+    busText.innerHTML = desc;
     switch(type){
         case "request":
             busArrow.innerHTML = "&#x2192"; //seta pra direita
@@ -203,9 +203,13 @@ async function start(){
             throw new Error(i);
         }, 0)
         await changeRamEdit(false);
+        //lineList será o objeto com todas as linhas selecionadas por sua posição na memória.
         cpu.controlUnity.code = lineList;
+        //na posição 0, estará a primeira linha. Ela será um objeto com o número da linha e a array linha em si.
         cpu.controlUnity.line = lineList[0].line;
+        //Essa será a instrução (primeiro elemento da linha), da primeira linha.
         cpu.controlUnity.instruction = lineList[0].line[0];
+        cpu.controlUnity.step = 1;
         setVisualRegister("offset", "ip", 0);
         const ss = cpu.segmentRegister.ss;
         const stackSegment = cpu.segmentTable[ss];
