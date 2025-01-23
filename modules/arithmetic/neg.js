@@ -16,9 +16,9 @@ const neg = [
         const codeSegment = cpu.segmentTable[cs];
         cpuXram(
             //desc
-            `bus endereço\n`
-            +`endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.ip}\n`
-            +`endereço linear = ${codeSegment.base + cpu.offsetRegister.ip}`,
+            `bus endereço<br/>
+            endereço linear = ${codeSegment.base.toString(16)} + ${cpu.offsetRegister.ip.toString(16)}<br/>
+            endereço linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(16)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -26,12 +26,51 @@ const neg = [
             //posição na ram
             codeSegment.base+cpu.offsetRegister.ip
         );
-        const linearAddress = getLinearAddress("ip");
-        //muda o ip pra 5 no visual
-        //não é necessário aquu, botei pra exemplificar.
-        setVisual("offset", "ip", 5);   
-
+        getLinearAddress("ip");
     },
     //step 2
+    (setVisual, cpuXram, getLinearAddress, cpu)=>{
+        const linearAddress = getLinearAddress("ip");
+        cpuXram(
+            `bus dados<br/>
+            dados: instrução NEG`,
+            "get",
+            linearAddress
+        );
+        setVisual("offset", "ip", cpu.offsetRegister.ip+4);
+    },
+    //step 3
+    (setVisual, cpuXram, getLinearAddress, cpu)=>{
+        neg[1](setVisual, cpuXram, getLinearAddress, cpu);
+    },
+    //step 4
+    (setVisual, cpuXram, getLinearAddress, cpu)=>{
+        const control = cpu.controlUnity;
+        const linearAddress = getLinearAddress("ip");
+        //const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
+        cpuXram(
+            `bus dados<br/>
+            dados: ${control.line[1]}`,
+            "get",
+            linearAddress
+        );
+        setVisual("offset", "di", parseInt(control.line[1],16));
+        setVisual("offset", "ip", cpu.offsetRegister.ip + 4);
+    },
+    //step 5
+    (setVisual, cpuXram, getLinearAddress, cpu)=>{
+        const ds = cpu.segmentRegister.ds;
+        const dataSegment = cpu.segmentTable[ds];
+        cpuXram(
+            `bus endereço<br/>
+            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
+            endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
+            "request",
+            dataSegment.base+cpu.offsetRegister.ds
+        );
+        getLinearAddress("di");
+    },
+    //step 6
+    
 ];
 export default neg;
