@@ -114,8 +114,8 @@ function setVisualRegister(type, register, value){
     if(type === "ram"){
         cpu.ram[register] = value;
         for(let i = 0; i < 4; i++){
-            const resto = value%(16*16);
-            document.getElementById(`ram-${register}`).value = '0'.repeat(Math.max(0,2-resto.toString(16).length))+resto.toString(16);
+            const resto = value%(0x100);
+            document.getElementById(`ram-${register+i}`).value = '0'.repeat(Math.max(0,2-resto.toString(16).length))+resto.toString(16);
             value = value >> 8;
         }
         searchRam((register+3).toString(16));

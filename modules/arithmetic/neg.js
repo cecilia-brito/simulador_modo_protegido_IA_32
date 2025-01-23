@@ -84,7 +84,8 @@ const neg = [
     },
     //step 7
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        setVisual("geral", "eax", -cpu.geralRegister.eax);
+        const maxBitLenght = 2**31;
+        setVisual("geral", "eax", maxBitLenght-cpu.geralRegister.eax);
         const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
         const linearAddress = getLinearAddress("di");
         cpuXram(
@@ -95,6 +96,7 @@ const neg = [
             "request",
             linearAddress
         )
+        setVisual("ram", linearAddress, cpu.geralRegister.eax)
         return true;
     }
 ];
