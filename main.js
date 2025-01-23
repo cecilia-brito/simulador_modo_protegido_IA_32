@@ -15,7 +15,8 @@ import jmp from "./modules/compare_test/jmp.js";
 import jxx from "./modules/compare_test/jxx.js";
 import loop from "./modules/compare_test/loop.js";
 import ret from "./modules/compare_test/ret.js";
-import mob from "./modules/moves/mov.js";
+import hlt from "./modules/moves/hlt.js";
+import mov from "./modules/moves/mov.js";
 import pop from "./modules/moves/pop.js";
 import push from "./modules/moves/push.js";
 import xcgh from "./modules/moves/xcgh.js";
@@ -39,7 +40,8 @@ const instructionList = {
     jxx,
     loop,
     ret,
-    mob,
+    hlt,
+    mov,
     pop,
     push,
     xcgh,
@@ -77,23 +79,23 @@ const cpu = {
         line: [],
     },
     segmentTable:{
-        "0001":{
+        1:{
             base:0x0000,
             limit:0x0FFF,
             access:0b11,
         },
-        "0002":{
+        2:{
             base:0x1000,
             limit:0x1FFF,
             access:0b11,
         },
-        "0003":{
+        3:{
             base:0x2000,
             limit:0x2FFF,
             access:0b11,
         },
     },
-    ram: Array.apply(null, Array(16**4)).map(()=>0),
+    ram: Array.apply(null, Array(0xFFF)).map(()=>0),
 };
 
 // Guardando a referência de elementos importantes do html
@@ -141,10 +143,45 @@ function cpuXram(desc, type, data){
             break;
     };
     if(data){
-        const ramInstance = document.getElementById(`ram-${data}`)
-        ramInstance.scrollIntoView();
+        searchRam(data);
     };
 };
+
+//
+function getLinearAddress(offset){
+    let gpf = false;
+    let message = "Programa terminado devido a falha de proteção geral no segmento de ";
+    let segment;
+    const offsetValue = cpu.offsetRegister[offset];
+    switch(offset){
+        case "ip":
+            segment = cpu.segmentTable[cpu.segmentRegister.cs];
+            message += "código";
+        break;
+        case "sp":
+            segment = cpu.segmentTable[cpu.segmentRegister.ss];
+            message += "pilha";
+        break;
+        case "bp":
+            segment = cpu.segmentTable[cpu.segmentRegister.ss];
+            message += "pilha";
+        break;
+        case "si":
+            segment = cpu.segmentTable[cpu.segmentRegister.ds];
+            message += "dados";
+        break;
+        case "di":
+            segment = cpu.segmentTable[cpu.segmentRegister.ds];
+            message += "dados";
+        break;
+    }
+    const sum = segment.base+offsetValue;
+    gpf = sum>segment.limit;
+    if(gpf){
+        throw new Error(message+ `. Programa tentou acessar valor em ${sum}, porém o limite é ${segment.limit}`);
+    };
+    return sum;
+}
 
 async function start(){
     // Essa parte será nosso "assembler". Aqui será checada cada linha do código para conferir se ela é válida.
@@ -170,8 +207,8 @@ async function start(){
         cpu.controlUnity.line = lineList[0].line;
         cpu.controlUnity.instruction = lineList[0].line[0];
         setVisualRegister("offset", "ip", 0);
-        const ss = cpu.segmentRegister.ss.toString(16);
-        const stackSegment = cpu.segmentTable['0'.repeat(Math.max(0, 4-ss.length))+ss];
+        const ss = cpu.segmentRegister.ss;
+        const stackSegment = cpu.segmentTable[ss];
         console.log(cpu)
         let spValue = stackSegment.limit - stackSegment.base;
         setVisualRegister("offset", "sp", spValue);
@@ -188,30 +225,49 @@ async function start(){
 
 //Função para avançar em um ciclo de clock ou iniciar o programa.
 async function clock(){
-    //TODO: mudar o que quer que seja isso aqui
-    if(clockButton.textContent.includes("start")){
-        const result = await start(); 
-        if(result)clockButton.textContent = "tick";
-        return;
-    }
-    const control = cpu.controlUnity;
-    let instructionResult = instructionList[control.instruction][control.step](setVisualRegister, cpuXram, cpu);
-    clockButton.textContent = clockButton.textContent == "tick"? "tock":"tick";
-    if(instructionResult){
-        control.line = control.code[cpu.offsetRegister.ip];
-        control.instruction = control.line[0];
-        control.step = 1;
-        if(control.instruction = "hlt")end();
-    }else{cpu.controlUnity.step++};
+    try{
+        //TODO: mudar o que quer que seja isso aqui
+        if(clockButton.textContent.includes("start")){
+            const result = await start(); 
+            if(result)clockButton.textContent = "tick";
+            return;
+        }
+        const control = cpu.controlUnity;
+        if(control.instruction === "hlt"){
+            end();
+            return;
+        }
+        let instructionResult = instructionList
+            [control.instruction][control.step]
+            (setVisualRegister, cpuXram, getLinearAddress, cpu);
+        clockButton.textContent = clockButton.textContent == "tick"? "tock":"tick";
+        if(instructionResult){
+            control.line = control.code[cpu.offsetRegister.ip];
+            control.instruction = control.line[0];
+            control.step = 1;
+        }else{cpu.controlUnity.step++};
+    }catch(e){
+        end();
+        alert(e.message);
+        console.error(e);
+    };
 };
 clockButton.onclick = clock;
 
-document.getElementById("click").onclick = async function end(){
+async function end(){
     await changeRamEdit(true);
     codeInput.contentEditable = true;
     setTableButton.disabled = false;
     clockButton.textContent = "start";
+    cpu.controlUnity = {
+        instruction: "",
+        step: 0,
+        code: [],
+        line: [],
+    }
+    cpuXram("", "", 0);
 };
+document.getElementById("click").onclick = end;
 
 //Torna a Ram ineditável durante a execução
 async function changeRamEdit(edit){
@@ -247,7 +303,7 @@ searchRamForm.lastElementChild.onclick = e=>{
 //Função para setar valores na tabela de segmentos
 function setTableData(data){
     const [selection, base, limit, access] = data;
-    cpu.segmentTable[selection] = {
+    cpu.segmentTable[parseInt(selection,16)] = {
         base: parseInt(base,16),
         limit: parseInt(limit,16),
         access: parseInt(access, 10)
