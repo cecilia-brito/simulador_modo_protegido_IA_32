@@ -143,7 +143,7 @@ function cpuXram(desc, type, data){
             break;
     };
     if(data){
-        searchRam(data);
+        searchRam(data.toString(16));
     };
 };
 
@@ -165,11 +165,11 @@ function getLinearAddress(offset){
         case "bp":
             segment = cpu.segmentTable[cpu.segmentRegister.ss];
             message += "pilha";
-        break;
+            break;
         case "si":
             segment = cpu.segmentTable[cpu.segmentRegister.ds];
             message += "dados";
-        break;
+            break;
         case "di":
             segment = cpu.segmentTable[cpu.segmentRegister.ds];
             message += "dados";
@@ -246,7 +246,7 @@ async function clock(){
             (setVisualRegister, cpuXram, getLinearAddress, cpu);
         clockButton.textContent = clockButton.textContent == "tick"? "tock":"tick";
         if(instructionResult){
-            control.line = control.code[cpu.offsetRegister.ip];
+            control.line = control.code[cpu.offsetRegister.ip].line;
             control.instruction = control.line[0];
             control.step = 1;
         }else{cpu.controlUnity.step++};
