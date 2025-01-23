@@ -91,11 +91,11 @@ const neg = [
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
         const eax = cpu.geralRegister.eax;
         let twoComp = (eax>>>0).toString(2);
-        twoComp = twoComp.padStart(Math.max(0,32-twoComp.length), "0")
+        twoComp = twoComp.padStart(Math.max(0,33-twoComp.length), "0")
             .replaceAll("0", "2")
             .replaceAll("1", "0")
             .replaceAll("2", "1");
-        setVisual("geral", "eax", parseInt(twoComp, 2)+1);
+        setVisual("geral", "eax", parseInt((parseInt(twoComp, 2)+1).toString(2).slice(-32),2));
         const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
         const linearAddress = getLinearAddress("di");
         cpuXram(
