@@ -53,6 +53,7 @@ const neg = [
             "get",
             linearAddress
         );
+        setVisual("offset", "si", parseInt(control.line[1],16));
         setVisual("offset", "di", parseInt(control.line[1],16));
         setVisual("offset", "ip", cpu.offsetRegister.ip + 4);
     },
@@ -62,17 +63,17 @@ const neg = [
         const dataSegment = cpu.segmentTable[ds];
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
+            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.si.toString(16)}<br/>
             endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
             "request",
-            dataSegment.base+cpu.offsetRegister.di
+            dataSegment.base+cpu.offsetRegister.si
         );
-        getLinearAddress("di");
+        getLinearAddress("si");
     },
     //step 6
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
         const ram = cpu.ram;
-        const linearAddress = getLinearAddress("di");
+        const linearAddress = getLinearAddress("si");
         const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
         cpuXram(
             `bus dados<br/>
@@ -83,6 +84,10 @@ const neg = [
         setVisual("geral", "eax", data);
     },
     //step 7
+    (setVisual, cpuXram, getLinearAddress, cpu)=>{
+        neg[5](setVisual, cpuXram, getLinearAddress, cpu);
+    },
+    //step 8
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
         const eax = cpu.geralRegister.eax;
         let twoComp = (eax>>>0).toString(2);
