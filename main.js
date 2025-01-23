@@ -81,17 +81,17 @@ const cpu = {
     segmentTable:{
         1:{
             base:0x0000,
-            limit:0x0FFF,
+            limit:0x00FF,
             access:0b11,
         },
         2:{
-            base:0x1000,
-            limit:0x1FFF,
+            base:0x100,
+            limit:0x1FF,
             access:0b11,
         },
         3:{
-            base:0x2000,
-            limit:0x2FFF,
+            base:0x200,
+            limit:0x2FF,
             access:0b11,
         },
     },
