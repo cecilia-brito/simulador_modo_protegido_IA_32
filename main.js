@@ -81,17 +81,17 @@ const cpu = {
     segmentTable:{
         1:{
             base:0x0000,
-            limit:0x0FFF,
+            limit:0x00FF,
             access:0b11,
         },
         2:{
-            base:0x1000,
-            limit:0x1FFF,
+            base:0x100,
+            limit:0x1FF,
             access:0b11,
         },
         3:{
-            base:0x2000,
-            limit:0x2FFF,
+            base:0x200,
+            limit:0x2FF,
             access:0b11,
         },
     },
@@ -114,8 +114,8 @@ function setVisualRegister(type, register, value){
     if(type === "ram"){
         cpu.ram[register] = value;
         for(let i = 0; i < 4; i++){
-            const resto = value%(16*16);
-            document.getElementById(`ram-${register}`).value = '0'.repeat(Math.max(0,2-resto.toString(16).length))+resto.toString(16);
+            const resto = value%(0x100);
+            document.getElementById(`ram-${register+i}`).value = '0'.repeat(Math.max(0,2-resto.toString(16).length))+resto.toString(16);
             value = value >> 8;
         }
         searchRam((register+3).toString(16));
@@ -143,7 +143,7 @@ function cpuXram(desc, type, data){
             break;
     };
     if(data){
-        searchRam(data);
+        searchRam(data.toString(16));
     };
 };
 
@@ -165,11 +165,11 @@ function getLinearAddress(offset){
         case "bp":
             segment = cpu.segmentTable[cpu.segmentRegister.ss];
             message += "pilha";
-        break;
+            break;
         case "si":
             segment = cpu.segmentTable[cpu.segmentRegister.ds];
             message += "dados";
-        break;
+            break;
         case "di":
             segment = cpu.segmentTable[cpu.segmentRegister.ds];
             message += "dados";
@@ -246,7 +246,7 @@ async function clock(){
             (setVisualRegister, cpuXram, getLinearAddress, cpu);
         clockButton.textContent = clockButton.textContent == "tick"? "tock":"tick";
         if(instructionResult){
-            control.line = control.code[cpu.offsetRegister.ip];
+            control.line = control.code[cpu.offsetRegister.ip].line;
             control.instruction = control.line[0];
             control.step = 1;
         }else{cpu.controlUnity.step++};
