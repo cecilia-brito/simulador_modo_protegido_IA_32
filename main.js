@@ -130,7 +130,7 @@ function setVisualRegister(type, register, value){
 
 // Função responsável por alterar visualmente a área entre os dados do registradores e a tabela da ram.
 function cpuXram(desc, type, data){
-    busText.textContent = desc;
+    busText.innerHTML = desc;
     switch(type){
         case "request":
             busArrow.innerHTML = "&#x2192"; //seta pra direita
@@ -236,7 +236,6 @@ async function clock(){
             if(result)clockButton.textContent = "tick";
             return;
         }
-        alert("alo")
         const control = cpu.controlUnity;
         if(control.instruction === "hlt"){
             end();
