@@ -87,8 +87,24 @@ const sub = [
         setVisual('offset', 'ip', cpu.offsetRegister.ip + 4)
         setVisual('geral','eax', ram[linearAddress])        
         return false
-    }
+    },
+    // Passo 7 (Conta)
+    (setVisual, cpuXram, getLinearAddress, cpu) => {
+        const ds = cpu.segmentRegister.ds
+        const codeSegment = cpu.segmentTable[ds]
 
+        const linearAddress = getLinearAddress('si')
+        cpuXram(
+            `bus dados\n`
+            + `informações do endereço = ${ram[linearAddress]}`,
+            codeSegment.base+cpu.offsetRegister.si
+        )
+        const conta = cpu.geralRegister.eax -= cpu.geralRegister.ebx
+        setVisual('offset', 'eax', conta)
+        if(conta < 0){
+            // mexer na flag
+        }
+    }
 ];
 
 /* 
