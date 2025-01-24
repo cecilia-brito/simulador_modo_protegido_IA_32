@@ -114,9 +114,13 @@ function setVisualRegister(type, register, value){
     if(type === "ram"){
         cpu.ram[register] = value;
         for(let i = 0; i < 4; i++){
-            const resto = value%(0x100);
-            document.getElementById(`ram-${register+i}`).value = '0'.repeat(Math.max(0,2-resto.toString(16).length))+resto.toString(16);
-            value = value >>> 8;
+            if(typeof value === "number"){
+                const resto = value%(0x100);
+                document.getElementById(`ram-${register+i}`).value = '0'.repeat(Math.max(0,2-resto.toString(16).length))+resto.toString(16);
+                value = value >>> 8;
+            }else{
+                document.getElementById(`ram-${register+i}`).value = value;
+            }
         }
         searchRam((register+3).toString(16));
         
@@ -192,6 +196,7 @@ async function start(){
         codeInput.textContent.split("\n").reduce((prev,singleLine,i)=>{
             const validLine = checkLine(singleLine);
             if(validLine){
+                validLine.forEach((str, i)=>{setVisualRegister("ram", prev+i*4, i===0?str:parseInt(str,16))})
                 lineList[prev] = {
                     number:i,
                     line:validLine
@@ -318,13 +323,42 @@ segmentForm.onsubmit = e=>{
     console.log(e);
     const formRef = e.target;
     if(segmentForm.checkValidity()){
+        let validTable = true;
+        const selectors = new Set();
+        let len = 0;
         for(let i = 0; i < formRef.length-1; i += 4){
-            setTableData([formRef[i].value, formRef[i+1].value, formRef[i+2].value, formRef[i+3].value])
+            selectors.add(formRef[i].value);
+            len++;
+            if(parseInt(formRef[i+1].value,16) >= parseInt(formRef[i+2].value,16)){
+                console.log(formRef[i+1].value, formRef[i+2].value)
+                formRef[i+2].setCustomValidity("O endereço limite deve ser maior que o endereço base.");
+                validTable = false;
+            }else if(parseInt(formRef[i+1].value,16)>=cpu.ram.length){
+                console.log(formRef[i+1].value)
+                formRef[i+1].setCustomValidity("O endereço deve ser menor que o maior índice da ram.");
+                validTable = false;
+            }else if(parseInt(formRef[i+2].value,16)>=cpu.ram.length){
+                console.log(formRef[i+2].value)
+                formRef[i+2].setCustomValidity("O endereço deve ser menor que o maior índice da ram.");
+                validTable = false;
+            }else if((i>2 && parseInt(formRef[i+1].value, 16) !== parseInt(formRef[i-2].value, 16)+1)){
+                console.log(formRef[i+1].value, formRef[i-2].value)
+                formRef[i+1].setCustomValidity("O endereço base de um segmento deve ser imediatamente após o seu anterior.");
+                validTable = false;
+            }
         }
-        console.log(cpu.segmentTable)
-    }else{
-        segmentForm.reportValidity();
+        if(validTable && selectors.size === len){
+            for(let i = 0; i < formRef.length-1; i += 4){
+                setTableData([formRef[i].value, formRef[i+1].value, formRef[i+2].value, formRef[i+3].value])
+            }
+            console.log(cpu.segmentTable)
+            return
+        }
     };
+    segmentForm.reportValidity();
+    for(let i = 0; i < formRef.length-1; i++){
+        formRef[i].setCustomValidity("")
+    }
 };
 
 const hexadecimalRegex = /^[0-9a-fA-F]{2}$/
