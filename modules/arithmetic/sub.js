@@ -3,7 +3,7 @@ const sub = [
     line => {
         return(line[0]&&line[1]&&line[2]&&[line[0], line[1], line[2]]);
     },
-    // Passo 1 (Leitura do Comando MOV)
+    // Passo 1 (Leitura do Comando SUB)
     (setVisual, cpuXram, getLinearAddress, cpu) => {
         const cs = cpu.segmentRegister.cs
         const codeSegment = cpu.segmentTable[cs]
@@ -16,14 +16,14 @@ const sub = [
         )
         const linearAddress = getLinearAddress("ip")
     },
-    // Passo 2 (Reconhecimento do Comando Mov)
+    // Passo 2 (Reconhecimento do Comando SUB)
     (setVisual, cpuXram, getLinearAddress, cpu) => {
         const cs = cpu.segmentRegister.cs
         const codeSegment = cpu.segmentTable[cs];
         const linearAddress = getLinearAddress('ip')
         cpuXram(
             `bus dados<br/>`
-            + `Informações do endereço = MOV`,
+            + `Informações do endereço = SUB`,
             'get',
             codeSegment.base+cpu.offsetRegister.ip
         )
@@ -43,7 +43,7 @@ const sub = [
         )
         
     },
-    // Passo 4 (Alterar EBX)
+    // Passo 4 
     (setVisual, cpuXram, getLinearAddress, cpu) => {
         const cs = cpu.segmentRegister.cs
         const codeSegment = cpu.segmentTable[cs]
@@ -57,11 +57,25 @@ const sub = [
             codeSegment.base+cpu.offsetRegister.ip
         )
         
-        setVisual('offset', 'ip', cpu.offsetRegister.ip + 4)
         setVisual('offset','si', parseInt(control.line[1], 16))
         setVisual('offset','di', parseInt(control.line[1], 16))
-        
+        setVisual('offset', 'ip', cpu.offsetRegister.ip + 4)
     },
+
+    (setVisual, cpuXram, getLinearAddress, cpu) => {
+        const ds = cpu.segmentRegister.ds;
+        const dataSegment = cpu.segmentTable[ds]
+        cpuXram(
+            `bus endereço<br/>
+            endereço linear = ${dataSegment.base.toString(16)}
+            + ${cpu.offsetRegister.di.toString(16)}<br/>
+            endereço linear = ${dataSegment.base.toString(16) + cpu.offsetRegister.di.toString(16)}`,
+            'request', 
+            dataSegment.base.toString(16) + cpu.offsetRegister.di.toString(16)
+        )
+        getLinearAddress('di')
+    },
+
     // Passo 5 (Fetch end. DST)
     (setVisual, cpuXram, getLinearAddress, cpu) => {
         const cs = cpu.segmentRegister.cs
@@ -83,7 +97,7 @@ const sub = [
         const ram = cpu.ram
         cpuXram(
             `bus dados<br/>`
-            + `Informações do endereço = MOV (DST)`,
+            + `Informações do endereço = SUB (DST)`,
             'get',
             codeSegment.base+cpu.offsetRegister.ip
         )
