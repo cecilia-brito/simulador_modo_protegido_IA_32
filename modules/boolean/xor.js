@@ -25,7 +25,7 @@ const xor = [
       codeSegment.base + cpu.offsetRegister.ip
     );
     getLinearAddress("ip");
-    console.log(cpu.controlUnity)
+    console.log(cpu.controlUnity);
   },
   //step 2
   (setVisual, cpuXram, getLinearAddress, cpu) => {
@@ -183,6 +183,6 @@ const xor = [
     );
     setVisual("ram", linearAddress, cpu.geralRegister.eax);
     return true;
-  }
+  },
 ];
 export default xor;
