@@ -67,12 +67,12 @@ const xor = [
       `bus endereço<br/>
             endereço linear = ${dataSegment.base.toString(
               16
-            )} + ${cpu.offsetRegister.di.toString(16)}<br/>
+            )} + ${cpu.offsetRegister.si.toString(16)}<br/>
             endereço linear = ${(
-              dataSegment.base + cpu.offsetRegister.di
+              dataSegment.base + cpu.offsetRegister.si
             ).toString(16)}`,
       "request",
-      dataSegment.base + cpu.offsetRegister.di
+      dataSegment.base + cpu.offsetRegister.si
     );
     getLinearAddress("si");
   },
@@ -122,12 +122,12 @@ const xor = [
       `bus endereço<br/>
             endereço linear = ${dataSegment.base.toString(
               16
-            )} + ${cpu.offsetRegister.di.toString(16)}<br/>
+            )} + ${cpu.offsetRegister.si.toString(16)}<br/>
             endereço linear = ${(
-              dataSegment.base + cpu.offsetRegister.di
+              dataSegment.base + cpu.offsetRegister.si
             ).toString(16)}`,
       "request",
-      dataSegment.base + cpu.offsetRegister.di
+      dataSegment.base + cpu.offsetRegister.si
     );
     getLinearAddress("si");
   },
