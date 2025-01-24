@@ -27,7 +27,7 @@ const sub = [
             'get',
             codeSegment.base+cpu.offsetRegister.ip
         )
-        setVisual('offset', 'ip', cpu.offsetRegister.ip + 8)
+        setVisual('offset', 'ip', cpu.offsetRegister.ip + 4)
     },
     // Passo 3 (Fetch end. SRC)
     (setVisual, cpuXram, getLinearAddress, cpu) => {
@@ -48,17 +48,18 @@ const sub = [
         const cs = cpu.segmentRegister.cs
         const codeSegment = cpu.segmentTable[cs]
         const linearAddress = getLinearAddress('ip')
+        const control = cpu.controlUnity;
         const ram = cpu.ram
         cpuXram(
             `bus dados<br/>`
-            + `Informações do endereço = MOV (SRC)`,
+            + `Informações do endereço = ${control.line[1]}`,
             'get',
             codeSegment.base+cpu.offsetRegister.ip
         )
         
-        setVisual('offset', 'ip', cpu.offsetRegister.ip - 4)
-        alert('oii')
-        setVisual('geral','ebx', ram[linearAddress])
+        setVisual('offset', 'ip', cpu.offsetRegister.ip + 4)
+        setVisual('offset','si', parseInt(control.line[1], 16))
+        setVisual('offset','di', parseInt(control.line[1], 16))
         
     },
     // Passo 5 (Fetch end. DST)
@@ -102,7 +103,7 @@ const sub = [
             + `informações do endereço = ${ram[linearAddress]}`,
             codeSegment.base+cpu.offsetRegister.si
         )
-        const conta = cpu.geralRegister.eax -= cpu.geralRegister.ebx
+        const conta = cpu.geralRegister.eax - cpu.geralRegister.ebx
         setVisual('offset', 'eax', conta)
         if(conta < 0){
             // mexer na flag
