@@ -110,3 +110,4 @@ const neg = [
         return true;
     }
 ];
+export default neg
