@@ -4,6 +4,7 @@ const sub = [
         return(line[0]&&line[1]&&line[2]&&[line[0], line[1], line[2]]);
     },
     (setVisual, cpuXram, getLinearAddress, cpu) => {
+        // Passo 1
         const cs = cpu.segmentRegister.cs
         const codeSegment = cpu.segmentTable[cs]
 
@@ -11,4 +12,9 @@ const sub = [
         
     }
 ];
+
+/* 
+Passos:
+1. 
+*/
 export default sub;
