@@ -117,9 +117,7 @@ const not = [
     // Passo 8
     (setVisual, cpuXram, getLinearAddress, cpu) => {
         const eax = cpu.geralRegister.eax.toString(2)
-        alert(~eax)
         let negation = ~eax.toString(16)
-        alert(negation)
         setVisual('geral', 'eax', negation)
         const linearAddress = getLinearAddress('di')
         cpuXram(
