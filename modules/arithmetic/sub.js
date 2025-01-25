@@ -15,7 +15,7 @@ const sub = [
             codeSegment.base + cpu.offsetRegister.ip
         )
         getLinearAddress('ip');
-        console.log(cpu.controlUnity)
+        console.log('step 1');
     },
     // step 2 (Reconhecimento: SUB)
     (setVisual, cpuXram, getLinearAddress, cpu) => {
@@ -27,12 +27,14 @@ const sub = [
             linearAddress
         );
         setVisual('offset', 'ip', cpu.offsetRegister.ip + 4);
+        console.log('step 2');
     },
     // step 3 Reconhecimento Destino
     (setVisual, cpuXram, getLinearAddress, cpu) => {
         sub[1](setVisual, cpuXram, getLinearAddress, cpu);
+        console.log('step 3');
     },
-    // step Alteração dos ponteiros Destino e Origem
+    // step 4 Alteração dos ponteiros Destino e Origem
     (setVisual, cpuXram, getLinearAddress, cpu) => {
         const control = cpu.controlUnity;
         const linearAddress = getLinearAddress('ip');
@@ -45,6 +47,7 @@ const sub = [
         setVisual('offset', 'di', parseInt(control.line[1], 16));
         setVisual('offset', 'si', parseInt(control.line[1], 16));
         setVisual('offset', 'ip', cpu.offsetRegister.ip + 4);
+        console.log('step 4');
     },
     // step 5
     (setVisual, cpuXram, getLinearAddress, cpu) => {
@@ -58,6 +61,7 @@ const sub = [
             dataSegment.base + cpu.offsetRegister.di
         );
         getLinearAddress('si');
+        console.log('step 5');
     },
     // step 6 (Escrever dados em EAX)
     (setVisual, cpuXram, getLinearAddress, cpu) => {
@@ -75,10 +79,12 @@ const sub = [
           linearAddress
         );
         setVisual("geral", "eax", data);
+        console.log('step 6');
       },
     // step 7 (Reconhecimento Origem)
     (setVisual, cpuXram, getLinearAddress, cpu) => {
         sub[1](setVisual, cpuXram, getLinearAddress, cpu);
+        console.log('step 7');
     },
     // step 8
     (setVisual, cpuXram, getLinearAddress, cpu) => {
@@ -92,6 +98,7 @@ const sub = [
         );
         setVisual('offset', 'si', parseInt(control.line[2], 16));
         setVisual('offset', 'si', parseInt(cpu.offsetRegister + 4));
+        console.log('step 8');
     },
     // step 9
     (setVisual, cpuXram, getLinearAddress, cpu) => {
@@ -105,6 +112,7 @@ const sub = [
             dataSegment.base + cpu.offsetRegister.di
         )
         getLinearAddress('si');
+        console.log('step 9');
     },
     // step 10
     (setVisual, cpuXram, getLinearAddress, cpu) => {
@@ -118,9 +126,11 @@ const sub = [
         cpuXram(
             `bus dados<br/>
             dados: ${data}`,
+            'get',
             linearAddress
         )
-        setVisual('geral', 'ebx', data)
+        setVisual('geral', 'ebx', data);
+        console.log('step 10');
     },
     // step 11
     (setVisual, cpuXram, getLinearAddress, cpu) => {
@@ -130,9 +140,9 @@ const sub = [
             `bus endereço<br/>
             endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
             endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
-      "request",
-      dataSegment.base + cpu.offsetRegister.di
-    );
+            'request',
+            dataSegment.base + cpu.offsetRegister.di
+        );
     getLinearAddress("di");
     },
     // step 12
