@@ -17,8 +17,8 @@ const neg = [
         cpuXram(
             //desc
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base.toString(16)} + ${cpu.offsetRegister.ip.toString(16)}<br/>
-            endereço linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(16)}`,
+            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -58,17 +58,17 @@ const neg = [
         setVisual("offset", "ip", cpu.offsetRegister.ip + 4);
     },
     //step 5
-    (setVisual, cpuXram, getLinearAddress, cpu)=>{
+    (setVisual, cpuXram, getLinearAddress, cpu, address="si")=>{
         const ds = cpu.segmentRegister.ds;
         const dataSegment = cpu.segmentTable[ds];
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.si.toString(16)}<br/>
-            endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister[address])}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister[address])}`,
             "request",
             dataSegment.base+cpu.offsetRegister.si
         );
-        getLinearAddress("si");
+        getLinearAddress(address);
     },
     //step 6
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
@@ -77,7 +77,7 @@ const neg = [
         const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
         cpuXram(
             `bus dados<br/>
-            dados: ${data.toString(16)}`,
+            dados: ${showHexa(data)}`,
             "get",
             linearAddress
         );
@@ -85,7 +85,7 @@ const neg = [
     },
     //step 7
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        neg[5](setVisual, cpuXram, getLinearAddress, cpu);
+        neg[5](setVisual, cpuXram, getLinearAddress, cpu, "di");
     },
     //step 8
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
@@ -100,14 +100,22 @@ const neg = [
         const linearAddress = getLinearAddress("di");
         cpuXram(
             `bus dados<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${linearAddress.toString(16)}<br/>
-            dados: ${cpu.geralRegister.eax.toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(linearAddress)}<br/>
+            dados: ${showHexa(cpu.geralRegister.eax)}`,
             "request",
             linearAddress
-        )
-        setVisual("ram", linearAddress, cpu.geralRegister.eax)
+        );
+        setVisual("ram", linearAddress, cpu.geralRegister.eax);
+        cpu.flag.zero = cpu.geralRegister.eax === 0;
+        cpu.flag.carry = !cpu.flag.zero;
+        cpu.flag.sign = twoComp[0]==="1"&&!twoComp.split("").every(a=>a==="1");
+        cpu.flag.overflow = eax === cpu.geralRegister.eax;
         return true;
     }
 ];
 export default neg;
+
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}
