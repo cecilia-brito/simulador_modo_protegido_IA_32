@@ -233,7 +233,9 @@ async function start(){
         codeInput.contentEditable = true;
         setTableButton.disabled = false;
         const cause = e.message;
-        if(parseInt(cause) !== NaN){
+        console.log(cause)
+        console.log(parseInt(cause))
+        if(!isNaN(parseInt(cause))){
             alert(`Código inadequado na linha ${cause}`);
         }else if(Object.keys(cpu.segmentRegister).includes(cause)){
             alert(`Seletor de segmento ${cause} não aponta para nenhum segmento válido`);
