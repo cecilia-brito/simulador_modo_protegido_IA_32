@@ -82,15 +82,16 @@ const mul = [
       "get",
       linearAddress
     );
-    setVisual("geral", "eax", data);
+    setVisual("geral", "ebx", data);
   },
   //step 7
   (setVisual, cpuXram, getLinearAddress, cpu) => {
     const eax = cpu.geralRegister.eax;
-    const src = cpu.controlUnity.line[1]; // Operando fonte vindo do array
-    const result = eax * src;
-    cpu.geralRegister.eax = result & 0xffffffff; // Menos significativos
-    cpu.geralRegister.edx = (result >> 32) & 0xffffffff; // Mais significativos
+    const ebx = cpu.geralRegister.ebx; // Operando fonte vindo do array
+    const result = (eax * ebx).toString(16).padStart(16, "0");
+    console.log(result)
+    cpu.geralRegister.eax = parseInt(result.slice(-8),16) // Menos significativos
+    cpu.geralRegister.edx = parseInt(result.slice(0, 8),16); // Mais significativos
     setVisual("geral", "eax", cpu.geralRegister.eax);
     setVisual("geral", "edx", cpu.geralRegister.edx);
     const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
