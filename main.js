@@ -191,6 +191,7 @@ function getLinearAddress(offset){
 async function start(){
     // Essa parte será nosso "assembler". Aqui será checada cada linha do código para conferir se ela é válida.
     try{
+        cpuXram("","",0);
         Object.keys(cpu.segmentRegister).forEach(val=>{
             if(!Object.keys(cpu.segmentTable).includes(cpu.segmentRegister[val].toString())){
                 throw new Error(val);
@@ -199,10 +200,17 @@ async function start(){
         codeInput.contentEditable = false;
         setTableButton.disabled = true;
         const lineList = {}
+        const base = cpu.segmentTable[cpu.segmentRegister.cs].base;
         codeInput.textContent.split("\n").reduce((prev,singleLine,i)=>{
             const validLine = checkLine(singleLine);
             if(validLine){
-                validLine.forEach((str, i)=>{setVisualRegister("ram", prev+i*4, i===0?str:parseInt(str,16))})
+                validLine.forEach((str, i)=>{
+                    setVisualRegister(
+                        "ram",
+                        prev+i*4,
+                        i===0?str:parseInt(str,16)
+                    )
+                })
                 lineList[prev] = {
                     number:i,
                     line:validLine
@@ -212,7 +220,7 @@ async function start(){
             //TODO: mudar o loop para que não seja necessário pará-lo dessa forma
             console.log(singleLine);
             throw new Error(i+1);
-        }, 0);
+        }, base);
         await changeRamEdit(false);
         //lineList será o objeto com todas as linhas selecionadas por sua posição na memória.
         cpu.controlUnity.code = lineList;
@@ -224,7 +232,6 @@ async function start(){
         setVisualRegister("offset", "ip", 0);
         const ss = cpu.segmentRegister.ss;
         const stackSegment = cpu.segmentTable[ss];
-        console.log(cpu)
         let spValue = stackSegment.limit - stackSegment.base;
         setVisualRegister("offset", "sp", spValue);
         setVisualRegister("offset", "bp", spValue);
@@ -233,7 +240,7 @@ async function start(){
         codeInput.contentEditable = true;
         setTableButton.disabled = false;
         const cause = e.message;
-        if(parseInt(cause) !== NaN){
+        if(!isNaN(parseInt(cause))){
             alert(`Código inadequado na linha ${cause}`);
         }else if(Object.keys(cpu.segmentRegister).includes(cause)){
             alert(`Seletor de segmento ${cause} não aponta para nenhum segmento válido`);
@@ -256,6 +263,7 @@ async function clock(){
         const control = cpu.controlUnity;
         if(control.instruction === "hlt"){
             end();
+            cpuXram("","",0);
             return;
         }
         let instructionResult = instructionList
@@ -285,8 +293,7 @@ async function end(){
         step: 0,
         code: [],
         line: [],
-    }
-    cpuXram("", "", 0);
+    };
 };
 document.getElementById("click").onclick = end;
 
@@ -357,7 +364,6 @@ function setTableData(data, obj){
 };
 segmentForm.onsubmit = e=>{
     e.preventDefault();
-    console.log(e);
     const formRef = e.target;
     if(segmentForm.checkValidity()){
         let validTable = true;
@@ -367,19 +373,15 @@ segmentForm.onsubmit = e=>{
             selectors.add(formRef[i].value);
             len++;
             if(parseInt(formRef[i+1].value,16) >= parseInt(formRef[i+2].value,16)){
-                console.log(formRef[i+1].value, formRef[i+2].value)
                 formRef[i+2].setCustomValidity("O endereço limite deve ser maior que o endereço base.");
                 validTable = false;
             }else if(parseInt(formRef[i+1].value,16)>=cpu.ram.length){
-                console.log(formRef[i+1].value)
                 formRef[i+1].setCustomValidity("O endereço deve ser menor que o maior índice da ram.");
                 validTable = false;
             }else if(parseInt(formRef[i+2].value,16)>=cpu.ram.length){
-                console.log(formRef[i+2].value)
                 formRef[i+2].setCustomValidity("O endereço deve ser menor que o maior índice da ram.");
                 validTable = false;
             }else if((i>2 && parseInt(formRef[i+1].value, 16) !== parseInt(formRef[i-2].value, 16)+1)){
-                console.log(formRef[i+1].value, formRef[i-2].value)
                 formRef[i+1].setCustomValidity("O endereço base de um segmento deve ser imediatamente após o seu anterior.");
                 validTable = false;
             }
@@ -403,7 +405,6 @@ segmentForm.onsubmit = e=>{
 //Função para checar a alteração na ram
 const hexadecimalRegex = /^[0-9a-fA-F]{2}$/
 function ramEdit(e){
-    console.log(e)
     const target = e.target;
     const i = target.id.slice(4);
     if(!hexadecimalRegex.test(target.value)){
