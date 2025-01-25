@@ -1,8 +1,8 @@
 //ADD DST, SRC     Add SRC to DST
-//TODO adicionar gpf
+//TODO adicionar flags
 const add = [
     (array) =>{
-        if(array[0] !== undefined && array[1] != undefined && array[2] != undefined){
+        if(array[0] != undefined && array[1] != undefined && array[2] != undefined){
             return array;
         }
     },
@@ -156,7 +156,7 @@ const add = [
         return false;
     },//step 10
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        cpu.geralRegister.eax = cpu.geralRegister.eax + cpu.geralRegister.ebx, 16
+        cpu.geralRegister.eax = cpu.geralRegister.eax + cpu.geralRegister.ebx
         setVisual("geral", "eax", cpu.geralRegister.eax);
         const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
         const linearAddress = getLinearAddress("di");
