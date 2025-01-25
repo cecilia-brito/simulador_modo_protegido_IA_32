@@ -15,12 +15,8 @@ const xor = [
     const codeSegment = cpu.segmentTable[cs];
     cpuXram(
       `bus endereço<br/>
-        endereço linear = ${codeSegment.base.toString(
-          16
-        )} + ${cpu.offsetRegister.ip.toString(16)}<br/>
-        endereço linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(
-          16
-        )}`,
+        endereço linear = ${codeSegment.base.toString(16)} + ${cpu.offsetRegister.ip.toString(16)}<br/>
+        endereço linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(16)}`,
       "request",
       codeSegment.base + cpu.offsetRegister.ip
     );
@@ -65,12 +61,8 @@ const xor = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(
-              16
-            )} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${(
-              dataSegment.base + cpu.offsetRegister.di
-            ).toString(16)}`,
+            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
+            endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
       "request",
       dataSegment.base + cpu.offsetRegister.di
     );
@@ -120,9 +112,7 @@ const xor = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(
-              16
-            )} + ${cpu.offsetRegister.di.toString(16)}<br/>
+            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
             endereço linear = ${(
               dataSegment.base + cpu.offsetRegister.di
             ).toString(16)}`,
@@ -156,12 +146,8 @@ const xor = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(
-              16
-            )} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${(
-              dataSegment.base + cpu.offsetRegister.di
-            ).toString(16)}`,
+            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
+            endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
       "request",
       dataSegment.base + cpu.offsetRegister.di
     );
