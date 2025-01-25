@@ -21,7 +21,7 @@ const xor = [
       codeSegment.base + cpu.offsetRegister.ip
     );
     getLinearAddress("ip");
-    console.log(cpu.controlUnity)
+    console.log(cpu.controlUnity);
   },
   //step 2
   (setVisual, cpuXram, getLinearAddress, cpu) => {
@@ -61,10 +61,19 @@ const xor = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
+<<<<<<< HEAD
             endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
             endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
+=======
+            endereço linear = ${dataSegment.base.toString(
+              16
+            )} + ${cpu.offsetRegister.si.toString(16)}<br/>
+            endereço linear = ${(
+              dataSegment.base + cpu.offsetRegister.si
+            ).toString(16)}`,
+>>>>>>> origin/cecilia
       "request",
-      dataSegment.base + cpu.offsetRegister.di
+      dataSegment.base + cpu.offsetRegister.si
     );
     getLinearAddress("si");
   },
@@ -112,12 +121,18 @@ const xor = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
+<<<<<<< HEAD
             endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
+=======
+            endereço linear = ${dataSegment.base.toString(
+              16
+            )} + ${cpu.offsetRegister.si.toString(16)}<br/>
+>>>>>>> origin/cecilia
             endereço linear = ${(
-              dataSegment.base + cpu.offsetRegister.di
+              dataSegment.base + cpu.offsetRegister.si
             ).toString(16)}`,
       "request",
-      dataSegment.base + cpu.offsetRegister.di
+      dataSegment.base + cpu.offsetRegister.si
     );
     getLinearAddress("si");
   },
@@ -169,6 +184,6 @@ const xor = [
     );
     setVisual("ram", linearAddress, cpu.geralRegister.eax);
     return true;
-  }
+  },
 ];
 export default xor;

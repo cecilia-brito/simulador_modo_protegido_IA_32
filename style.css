@@ -13,6 +13,10 @@ ul{
     width: auto;
 }
 
+.no-border-input{
+    border: none;
+}
+
 .container{
     width: 100%;
     max-height: 70vh;
