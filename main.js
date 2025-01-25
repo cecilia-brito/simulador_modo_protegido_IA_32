@@ -117,7 +117,7 @@ function setVisualRegister(type, register, value){
         for(let i = 0; i < 4; i++){
             if(typeof value === "number"){
                 const resto = value%(0x100);
-                document.getElementById(`ram-${register+i}`).value = '0'.repeat(Math.max(0,2-resto.toString(16).length))+resto.toString(16);
+                document.getElementById(`ram-${register+i}`).value = (resto>>>0).toString(16).padStart(2,"0");
                 value = value >>> 8;
             }else{
                 document.getElementById(`ram-${register+i}`).value = value;
@@ -126,7 +126,7 @@ function setVisualRegister(type, register, value){
         searchRam((register+3).toString(16));
         
     }else{
-        let valueTo16 = value.toString(16);
+        let valueTo16 = (value>>>0).toString(16);
         cpu[type+"Register"][register] = value;
         valueTo16 = valueTo16.padStart(type==="segment"?4:8, '0');
         document.getElementById(register)[type==="segment"?"value":"textContent"] = valueTo16;
