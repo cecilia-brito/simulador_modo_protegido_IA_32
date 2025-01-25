@@ -17,8 +17,8 @@ const neg = [
         cpuXram(
             //desc
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base.toString(16)} + ${cpu.offsetRegister.ip.toString(16)}<br/>
-            endereço linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(16)}`,
+            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -53,30 +53,31 @@ const neg = [
             "get",
             linearAddress
         );
+        setVisual("offset", "si", parseInt(control.line[1],16));
         setVisual("offset", "di", parseInt(control.line[1],16));
         setVisual("offset", "ip", cpu.offsetRegister.ip + 4);
     },
     //step 5
-    (setVisual, cpuXram, getLinearAddress, cpu)=>{
+    (setVisual, cpuXram, getLinearAddress, cpu, address="si")=>{
         const ds = cpu.segmentRegister.ds;
         const dataSegment = cpu.segmentTable[ds];
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister[address])}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister[address])}`,
             "request",
-            dataSegment.base+cpu.offsetRegister.di
+            dataSegment.base+cpu.offsetRegister.si
         );
-        getLinearAddress("di");
+        getLinearAddress(address);
     },
     //step 6
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
         const ram = cpu.ram;
-        const linearAddress = getLinearAddress("di");
+        const linearAddress = getLinearAddress("si");
         const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
         cpuXram(
             `bus dados<br/>
-            dados: ${data}`,
+            dados: ${showHexa(data)}`,
             "get",
             linearAddress
         );
@@ -84,20 +85,37 @@ const neg = [
     },
     //step 7
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        const maxBitLenght = 2**31;
-        setVisual("geral", "eax", maxBitLenght-cpu.geralRegister.eax);
+        neg[5](setVisual, cpuXram, getLinearAddress, cpu, "di");
+    },
+    //step 8
+    (setVisual, cpuXram, getLinearAddress, cpu)=>{
+        const eax = cpu.geralRegister.eax;
+        let twoComp = (eax>>>0).toString(2);
+        twoComp = twoComp.padStart(32, "0")
+            .replaceAll("0", "2")
+            .replaceAll("1", "0")
+            .replaceAll("2", "1");
+        setVisual("geral", "eax", parseInt((parseInt(twoComp, 2)+1).toString(2).slice(-32),2));
         const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
         const linearAddress = getLinearAddress("di");
         cpuXram(
             `bus dados<br/>
-            endereço linear = ${dataSegment.base} + ${cpu.offsetRegister.di}<br/>
-            endereço linear = ${linearAddress}<br/>
-            dados: ${cpu.geralRegister.eax.toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(linearAddress)}<br/>
+            dados: ${showHexa(cpu.geralRegister.eax)}`,
             "request",
             linearAddress
-        )
-        setVisual("ram", linearAddress, cpu.geralRegister.eax)
+        );
+        setVisual("ram", linearAddress, cpu.geralRegister.eax);
+        cpu.flag.zero = cpu.geralRegister.eax === 0;
+        cpu.flag.carry = !cpu.flag.zero;
+        cpu.flag.sign = twoComp[0]==="1"&&!twoComp.split("").every(a=>a==="1");
+        cpu.flag.overflow = eax === cpu.geralRegister.eax;
         return true;
     }
 ];
 export default neg;
+
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}
