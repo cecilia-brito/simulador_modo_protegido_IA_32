@@ -82,13 +82,13 @@ const mul = [
       "get",
       linearAddress
     );
-    setVisual("geral", "eax", data);
+    setVisual("geral", "ebx", data);
   },
   //step 7
   (setVisual, cpuXram, getLinearAddress, cpu) => {
     const eax = cpu.geralRegister.eax;
-    const src = cpu.controlUnity.line[1]; // Operando fonte vindo do array
-    const result = eax * src;
+    const ebx = cpu.geralRegister.ebx; // Operando fonte vindo do array
+    const result = eax * ebx;
     cpu.geralRegister.eax = result & 0xffffffff; // Menos significativos
     cpu.geralRegister.edx = (result >> 32) & 0xffffffff; // Mais significativos
     setVisual("geral", "eax", cpu.geralRegister.eax);
