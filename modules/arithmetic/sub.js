@@ -161,7 +161,6 @@ const sub = [
         setVisual('ram', linearAddress, cpu.geralRegister.eax);
         return true
     }
-
 ];
 export default sub;
 
