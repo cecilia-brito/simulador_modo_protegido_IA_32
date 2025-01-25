@@ -108,6 +108,7 @@ const searchRamForm = document.getElementById("search-ram-form"); //formulário 
 const segmentForm = document.getElementById("segment-form"); //elemento formulário de segmentos
 const segmentTable = document.getElementById("segment-table"); //tabela de segmentos
 const setTableButton = document.getElementById("set-table-button"); //botão que define os novos valores da tabela
+const segmentSelectors = document.querySelectorAll("input.segment-selector"); //Lista com os elementos que representam os seletores de segmento
 
 // Função responsável por alterar os valores dos registradores cujo valor é apresentado ao usuário.
 function setVisualRegister(type, register, value){
@@ -127,8 +128,8 @@ function setVisualRegister(type, register, value){
     }else{
         let valueTo16 = value.toString(16);
         cpu[type+"Register"][register] = value;
-        valueTo16 = '0'.repeat(Math.max(0,(type==="segment"?4:8)-valueTo16.length))+valueTo16;
-        document.getElementById(register).textContent = valueTo16;
+        valueTo16 = valueTo16.padStart(type==="segment"?4:8, '0');
+        document.getElementById(register)[type==="segment"?"value":"textContent"] = valueTo16;
     }
 };
 
@@ -190,6 +191,11 @@ function getLinearAddress(offset){
 async function start(){
     // Essa parte será nosso "assembler". Aqui será checada cada linha do código para conferir se ela é válida.
     try{
+        Object.keys(cpu.segmentRegister).forEach(val=>{
+            if(!Object.keys(cpu.segmentTable).includes(cpu.segmentRegister[val].toString())){
+                throw new Error(val);
+            };
+        });
         codeInput.contentEditable = false;
         setTableButton.disabled = true;
         const lineList = {}
@@ -205,8 +211,8 @@ async function start(){
             };
             //TODO: mudar o loop para que não seja necessário pará-lo dessa forma
             console.log(singleLine);
-            throw new Error(i);
-        }, 0)
+            throw new Error(i+1);
+        }, 0);
         await changeRamEdit(false);
         //lineList será o objeto com todas as linhas selecionadas por sua posição na memória.
         cpu.controlUnity.code = lineList;
@@ -224,10 +230,16 @@ async function start(){
         setVisualRegister("offset", "bp", spValue);
         return true;
     }catch(e){
-        console.log(e);
         codeInput.contentEditable = true;
         setTableButton.disabled = false;
-        alert(`Código inadequado na linha ${e.message}`);
+        const cause = e.message;
+        if(parseInt(cause) !== NaN){
+            alert(`Código inadequado na linha ${cause}`);
+        }else if(Object.keys(cpu.segmentRegister).includes(cause)){
+            alert(`Seletor de segmento ${cause} não aponta para nenhum segmento válido`);
+        }else{
+            alert(`Erro encontrado: ${e.message}`);
+        };
         return false;
     };
 };
@@ -251,7 +263,7 @@ async function clock(){
             (setVisualRegister, cpuXram, getLinearAddress, cpu);
         clockButton.textContent = clockButton.textContent == "tick"? "tock":"tick";
         if(instructionResult){
-            control.line = control.code[cpu.offsetRegister.ip].line;
+            control.line = control.code[getLinearAddress("ip")].line;
             control.instruction = control.line[0];
             control.step = 1;
         }else{cpu.controlUnity.step++};
@@ -308,11 +320,36 @@ searchRamForm.lastElementChild.onclick = e=>{
     searchRam(input);
 };
 
+const hexadecimalRegex4 = /^[0-9a-fA-F]{4}$/
+function segmentSelectorEdit(e, name){
+    const target = e.target;
+    if(hexadecimalRegex4.test(target.value)){
+        const index = parseInt(target.value,16);
+        const isSelector = Object.keys(cpu.segmentTable).includes(index.toString(10));
+        const isUnique = !Object.keys(cpu.segmentRegister)
+        .filter(val=>val!==name)
+        .map(val=>cpu.segmentRegister[val])
+        .includes(index);
+        if(isSelector && isUnique){
+            setVisualRegister("segment", name, index);
+            return;
+        }
+    }
+    target.value = cpu.segmentRegister[name].toString(16).padStart(4, "0");
+}
+segmentSelectors.forEach((val, i)=>{
+    const name = [
+        "cs",
+        "ds",
+        "ss"
+    ][i];
+    val.onchange = e=>segmentSelectorEdit(e,name);
+})
 
 //Função para setar valores na tabela de segmentos
-function setTableData(data){
+function setTableData(data, obj){
     const [selection, base, limit, access] = data;
-    cpu.segmentTable[parseInt(selection,16)] = {
+    obj[parseInt(selection,16)] = {
         base: parseInt(base,16),
         limit: parseInt(limit,16),
         access: parseInt(access, 10)
@@ -348,9 +385,11 @@ segmentForm.onsubmit = e=>{
             }
         }
         if(validTable && selectors.size === len){
+            const obj = {};
             for(let i = 0; i < formRef.length-1; i += 4){
-                setTableData([formRef[i].value, formRef[i+1].value, formRef[i+2].value, formRef[i+3].value])
+                setTableData([formRef[i].value, formRef[i+1].value, formRef[i+2].value, formRef[i+3].value], obj);
             }
+            cpu.segmentTable = obj; 
             console.log(cpu.segmentTable)
             return
         }
@@ -361,6 +400,7 @@ segmentForm.onsubmit = e=>{
     }
 };
 
+//Função para checar a alteração na ram
 const hexadecimalRegex = /^[0-9a-fA-F]{2}$/
 function ramEdit(e){
     console.log(e)
