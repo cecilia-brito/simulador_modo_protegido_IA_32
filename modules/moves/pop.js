@@ -63,7 +63,7 @@ const pop = [
     },
 
 
-    // Passo 6 (Pegando dados da RAM)
+    // Passo 6 (Pegando dados da Pilha)
     (setVisual, cpuXram, getLinearAddress, cpu) => {
         const linearAddress = getLinearAddress('sp')
         cpuXram(
@@ -77,7 +77,7 @@ const pop = [
             ram[linearAddress + 2] * 0x10000 +
             ram[linearAddress + 1] * 0x100 +
             ram[linearAddress]
-        setVisual('ram', linearAddress-3, cpu.offsetRegister.ip);
+        setVisual('ram', linearAddress-3, cpu.offsetRegister.ip); //?
         setVisual('offset', 'sp', cpu.offsetRegister.sp-4);
         setVisual('geral','eax', data)
     },
