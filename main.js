@@ -19,7 +19,7 @@ import hlt from "./modules/moves/hlt.js";
 import mov from "./modules/moves/mov.js";
 import pop from "./modules/moves/pop.js";
 import push from "./modules/moves/push.js";
-import xcgh from "./modules/moves/xcgh.js";
+import xchg from "./modules/moves/xchg.js";
 
 // Criação de um objeto com todas as referências de instruções para acesso dinâmico
 const instructionList = {
@@ -44,7 +44,7 @@ const instructionList = {
     mov,
     pop,
     push,
-    xcgh,
+    xchg,
     algo:[(line)=>line],
 };
 
