@@ -90,7 +90,6 @@ const mov = [
                 codeSegment.base+cpu.offsetRegister.si
             );
             setVisual("geral", "eax", data)
-            setVisual("ram", linearAddress, data + 1)
             return false
         },
         //step 7
@@ -123,7 +122,7 @@ const mov = [
     
             cpuXram(
                 `bus endereço<br/>
-                endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.si}<br/>
+                endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.di}<br/>
                 endereço linear = ${codeSegment.base + cpu.offsetRegister.di}`,
                 "request",
                 codeSegment.base+cpu.offsetRegister.di
@@ -148,9 +147,9 @@ const mov = [
             );
 
             setVisual("geral", "ebx", data)
-            setVisual("ram", linearAddress, eax)
+            setVisual("ram", linearAddress, eax) 
             
-            return true
+            return false
         },
             //step 11
             (setVisual, cpuXram, getLinearAddress, cpu)=>{
@@ -161,7 +160,7 @@ const mov = [
         
                 cpuXram(
                     `bus endereço<br/>
-                    endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.si}<br/>
+                    endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.di}<br/>
                     endereço linear = ${codeSegment.base + cpu.offsetRegister.di}`,
                     "request",
                     codeSegment.base+cpu.offsetRegister.di
@@ -169,6 +168,7 @@ const mov = [
                 return false
             },
             //step 12
+            //apresenta erro na hora de mostrar o valor alterado
             (setVisual, cpuXram, getLinearAddress, cpu)=>{
                 const ds = cpu.segmentRegister.ds;
                 const codeSegment = cpu.segmentTable[ds];

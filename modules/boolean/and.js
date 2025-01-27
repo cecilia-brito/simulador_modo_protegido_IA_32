@@ -89,7 +89,6 @@ const and = [
             codeSegment.base+cpu.offsetRegister.si
         );
         setVisual("geral", "eax", data)
-        setVisual("ram", linearAddress, data + 1)
         return false
     },
     //step 7
@@ -122,7 +121,7 @@ const and = [
 
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.si}<br/>
+            endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.di}<br/>
             endereço linear = ${codeSegment.base + cpu.offsetRegister.di}`,
             "request",
             codeSegment.base+cpu.offsetRegister.di
@@ -147,8 +146,7 @@ const and = [
         );
         setVisual("geral", "ebx", data)
         setVisual("ram", linearAddress, eax & ebx)
-        
-        return true
+        return false
     },
         //step 11
         (setVisual, cpuXram, getLinearAddress, cpu)=>{
