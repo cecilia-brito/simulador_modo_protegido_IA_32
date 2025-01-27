@@ -19,7 +19,7 @@ import hlt from "./modules/moves/hlt.js";
 import mov from "./modules/moves/mov.js";
 import pop from "./modules/moves/pop.js";
 import push from "./modules/moves/push.js";
-import xcgh from "./modules/moves/xcgh.js";
+import xchg from "./modules/moves/xchg.js";
 
 // Criação de um objeto com todas as referências de instruções para acesso dinâmico
 const instructionList = {
@@ -44,7 +44,7 @@ const instructionList = {
     mov,
     pop,
     push,
-    xcgh,
+    xchg,
     algo:[(line)=>line],
 };
 
@@ -108,23 +108,34 @@ const searchRamForm = document.getElementById("search-ram-form"); //formulário 
 const segmentForm = document.getElementById("segment-form"); //elemento formulário de segmentos
 const segmentTable = document.getElementById("segment-table"); //tabela de segmentos
 const setTableButton = document.getElementById("set-table-button"); //botão que define os novos valores da tabela
+const segmentSelectors = document.querySelectorAll("input.segment-selector"); //Lista com os elementos que representam os seletores de segmento
 
 // Função responsável por alterar os valores dos registradores cujo valor é apresentado ao usuário.
-function setVisualRegister(type, register, value){
+function setVisualRegister(type, register, value, amount="word"){
     if(type === "ram"){
-        cpu.ram[register] = value;
-        for(let i = 0; i < 4; i++){
-            const resto = value%(0x100);
-            document.getElementById(`ram-${register+i}`).value = '0'.repeat(Math.max(0,2-resto.toString(16).length))+resto.toString(16);
-            value = value >>> 8;
+        if(amount==="word"){
+            for(let i = 0; i < 4; i++){
+                if(typeof value === "number"){
+                    console.log(value);
+                    const resto = (value>>>0)%(0x100);
+                    cpu.ram[register+i] = resto;
+                    document.getElementById(`ram-${register+i}`).value = (resto>>>0).toString(16).padStart(2,"0");
+                    value = value >>> 8;
+                }else{
+                    cpu.ram[register+i] = value;
+                    document.getElementById(`ram-${register+i}`).value = value;
+                }
+            }
+        }else if(amount==="single"){
+            document.getElementById(`ram-${register}`).value = value.toString(16).padStart(2,"0");
+            cpu.ram[register] = value;
         }
-        searchRam((register+3).toString(16));
-        
+        searchRam((register+3).toString(16));  
     }else{
-        let valueTo16 = value.toString(16);
+        let valueTo16 = (value>>>0).toString(16);
         cpu[type+"Register"][register] = value;
-        valueTo16 = '0'.repeat(Math.max(0,(type==="segment"?4:8)-valueTo16.length))+valueTo16;
-        document.getElementById(register).textContent = valueTo16;
+        valueTo16 = valueTo16.padStart(type==="segment"?4:8, '0');
+        document.getElementById(register)[type==="segment"?"value":"textContent"] = valueTo16;
     }
 };
 
@@ -186,22 +197,38 @@ function getLinearAddress(offset){
 async function start(){
     // Essa parte será nosso "assembler". Aqui será checada cada linha do código para conferir se ela é válida.
     try{
+        cpuXram("","",0);
+        Object.keys(cpu.segmentRegister).forEach(val=>{
+            if(!Object.keys(cpu.segmentTable).includes(cpu.segmentRegister[val].toString())){
+                throw new Error(val);
+            };
+        });
         codeInput.contentEditable = false;
         setTableButton.disabled = true;
         const lineList = {}
+        const base = cpu.segmentTable[cpu.segmentRegister.cs].base;
         codeInput.textContent.split("\n").reduce((prev,singleLine,i)=>{
             const validLine = checkLine(singleLine);
             if(validLine){
+                const size =validLine.reduce((ant, str, i)=>{
+                    setVisualRegister(
+                        "ram",
+                        prev+ant,
+                        i===0?str:parseInt(str,16),
+                        i>0&&str.length===2?"word":"single"
+                    );
+                    return ant+(i>0&&str.length===2?1:4);
+                }, 0);
                 lineList[prev] = {
                     number:i,
                     line:validLine
                 };
-                return prev+4*validLine.length;
+                return prev+size;
             };
             //TODO: mudar o loop para que não seja necessário pará-lo dessa forma
             console.log(singleLine);
-            throw new Error(i);
-        }, 0)
+            throw new Error(i+1);
+        }, base);
         await changeRamEdit(false);
         //lineList será o objeto com todas as linhas selecionadas por sua posição na memória.
         cpu.controlUnity.code = lineList;
@@ -213,16 +240,21 @@ async function start(){
         setVisualRegister("offset", "ip", 0);
         const ss = cpu.segmentRegister.ss;
         const stackSegment = cpu.segmentTable[ss];
-        console.log(cpu)
         let spValue = stackSegment.limit - stackSegment.base;
         setVisualRegister("offset", "sp", spValue);
         setVisualRegister("offset", "bp", spValue);
         return true;
     }catch(e){
-        console.log(e);
         codeInput.contentEditable = true;
         setTableButton.disabled = false;
-        alert(`Código inadequado na linha ${e.message}`);
+        const cause = e.message;
+        if(!isNaN(parseInt(cause))){
+            alert(`Código inadequado na linha ${cause}`);
+        }else if(Object.keys(cpu.segmentRegister).includes(cause)){
+            alert(`Seletor de segmento ${cause} não aponta para nenhum segmento válido`);
+        }else{
+            alert(`Erro encontrado: ${e.message}`);
+        };
         return false;
     };
 };
@@ -237,23 +269,24 @@ async function clock(){
             return;
         }
         const control = cpu.controlUnity;
-        if(control.instruction === "hlt"){
-            end();
-            return;
-        }
         let instructionResult = instructionList
             [control.instruction][control.step]
             (setVisualRegister, cpuXram, getLinearAddress, cpu);
         clockButton.textContent = clockButton.textContent == "tick"? "tock":"tick";
         if(instructionResult){
-            control.line = control.code[cpu.offsetRegister.ip].line;
+            control.line = control.code[getLinearAddress("ip")].line;
             control.instruction = control.line[0];
             control.step = 1;
         }else{cpu.controlUnity.step++};
     }catch(e){
         end();
-        alert(e.message);
-        console.error(e);
+        if(e.message !== "hlt"){
+            alert(e.message);
+            console.error(e);
+        }else{
+            cpuXram("","",0);
+            alert("Execução terminada com sucesso");
+        }
     };
 };
 clockButton.onclick = clock;
@@ -268,8 +301,7 @@ async function end(){
         step: 0,
         code: [],
         line: [],
-    }
-    cpuXram("", "", 0);
+    };
 };
 document.getElementById("click").onclick = end;
 
@@ -303,11 +335,36 @@ searchRamForm.lastElementChild.onclick = e=>{
     searchRam(input);
 };
 
+const hexadecimalRegex4 = /^[0-9a-fA-F]{4}$/
+function segmentSelectorEdit(e, name){
+    const target = e.target;
+    if(hexadecimalRegex4.test(target.value)){
+        const index = parseInt(target.value,16);
+        const isSelector = Object.keys(cpu.segmentTable).includes(index.toString(10));
+        const isUnique = !Object.keys(cpu.segmentRegister)
+        .filter(val=>val!==name)
+        .map(val=>cpu.segmentRegister[val])
+        .includes(index);
+        if(isSelector && isUnique){
+            setVisualRegister("segment", name, index);
+            return;
+        }
+    }
+    target.value = cpu.segmentRegister[name].toString(16).padStart(4, "0");
+}
+segmentSelectors.forEach((val, i)=>{
+    const name = [
+        "cs",
+        "ds",
+        "ss"
+    ][i];
+    val.onchange = e=>segmentSelectorEdit(e,name);
+})
 
 //Função para setar valores na tabela de segmentos
-function setTableData(data){
+function setTableData(data, obj){
     const [selection, base, limit, access] = data;
-    cpu.segmentTable[parseInt(selection,16)] = {
+    obj[parseInt(selection,16)] = {
         base: parseInt(base,16),
         limit: parseInt(limit,16),
         access: parseInt(access, 10)
@@ -315,21 +372,47 @@ function setTableData(data){
 };
 segmentForm.onsubmit = e=>{
     e.preventDefault();
-    console.log(e);
     const formRef = e.target;
     if(segmentForm.checkValidity()){
+        let validTable = true;
+        const selectors = new Set();
+        let len = 0;
         for(let i = 0; i < formRef.length-1; i += 4){
-            setTableData([formRef[i].value, formRef[i+1].value, formRef[i+2].value, formRef[i+3].value])
+            selectors.add(formRef[i].value);
+            len++;
+            if(parseInt(formRef[i+1].value,16) >= parseInt(formRef[i+2].value,16)){
+                formRef[i+2].setCustomValidity("O endereço limite deve ser maior que o endereço base.");
+                validTable = false;
+            }else if(parseInt(formRef[i+1].value,16)>=cpu.ram.length){
+                formRef[i+1].setCustomValidity("O endereço deve ser menor que o maior índice da ram.");
+                validTable = false;
+            }else if(parseInt(formRef[i+2].value,16)>=cpu.ram.length){
+                formRef[i+2].setCustomValidity("O endereço deve ser menor que o maior índice da ram.");
+                validTable = false;
+            }else if((i>2 && parseInt(formRef[i+1].value, 16) !== parseInt(formRef[i-2].value, 16)+1)){
+                formRef[i+1].setCustomValidity("O endereço base de um segmento deve ser imediatamente após o seu anterior.");
+                validTable = false;
+            }
         }
-        console.log(cpu.segmentTable)
-    }else{
-        segmentForm.reportValidity();
+        if(validTable && selectors.size === len){
+            const obj = {};
+            for(let i = 0; i < formRef.length-1; i += 4){
+                setTableData([formRef[i].value, formRef[i+1].value, formRef[i+2].value, formRef[i+3].value], obj);
+            }
+            cpu.segmentTable = obj; 
+            console.log(cpu.segmentTable)
+            return
+        }
     };
+    segmentForm.reportValidity();
+    for(let i = 0; i < formRef.length-1; i++){
+        formRef[i].setCustomValidity("")
+    }
 };
 
+//Função para checar a alteração na ram
 const hexadecimalRegex = /^[0-9a-fA-F]{2}$/
 function ramEdit(e){
-    console.log(e)
     const target = e.target;
     const i = target.id.slice(4);
     if(!hexadecimalRegex.test(target.value)){
@@ -341,7 +424,7 @@ function ramEdit(e){
 
 //funções utilitárias
 //Aqui será feita checagem de uma singular linha.
-const codeLineRegex = /^(\w+)[\s^\n]*(( ([0-9a-fA-F]{8})[\s^\n]*((,[\s^\n]+([0-9a-fA-F]{8})[\s^\n]*(;.*)?)|(;.*))?)|(;.*))?$/gi;
+const codeLineRegex = /^(\w+)[\s^\n]*(( ([0-9a-fA-F]{2,8}|e[abcd]x|#[0-9]+)[\s^\n]*((,[\s^\n]+([0-9a-fA-F]{8}|e[abcd]x|#[0-9]+)[\s^\n]*(;.*)?)|(;.*))?)|(;.*))?$/gi;
 function checkLine(line){
     let lineMatch = [...line.matchAll(codeLineRegex)];
     if(lineMatch.length && instructionList[lineMatch[0][1].toLowerCase()]){
