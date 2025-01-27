@@ -111,20 +111,26 @@ const setTableButton = document.getElementById("set-table-button"); //botão que
 const segmentSelectors = document.querySelectorAll("input.segment-selector"); //Lista com os elementos que representam os seletores de segmento
 
 // Função responsável por alterar os valores dos registradores cujo valor é apresentado ao usuário.
-function setVisualRegister(type, register, value){
+function setVisualRegister(type, register, value, amount="word"){
     if(type === "ram"){
-        cpu.ram[register] = value;
-        for(let i = 0; i < 4; i++){
-            if(typeof value === "number"){
-                const resto = value%(0x100);
-                document.getElementById(`ram-${register+i}`).value = (resto>>>0).toString(16).padStart(2,"0");
-                value = value >>> 8;
-            }else{
-                document.getElementById(`ram-${register+i}`).value = value;
+        if(amount==="word"){
+            for(let i = 0; i < 4; i++){
+                if(typeof value === "number"){
+                    console.log(value);
+                    const resto = (value>>>0)%(0x100);
+                    cpu.ram[register+i] = resto;
+                    document.getElementById(`ram-${register+i}`).value = (resto>>>0).toString(16).padStart(2,"0");
+                    value = value >>> 8;
+                }else{
+                    cpu.ram[register+i] = value;
+                    document.getElementById(`ram-${register+i}`).value = value;
+                }
             }
+        }else if(amount==="single"){
+            document.getElementById(`ram-${register}`).value = value.toString(16).padStart(2,"0");
+            cpu.ram[register] = value;
         }
-        searchRam((register+3).toString(16));
-        
+        searchRam((register+3).toString(16));  
     }else{
         let valueTo16 = (value>>>0).toString(16);
         cpu[type+"Register"][register] = value;
@@ -204,18 +210,20 @@ async function start(){
         codeInput.textContent.split("\n").reduce((prev,singleLine,i)=>{
             const validLine = checkLine(singleLine);
             if(validLine){
-                validLine.forEach((str, i)=>{
+                const size =validLine.reduce((ant, str, i)=>{
                     setVisualRegister(
                         "ram",
-                        prev+i*4,
-                        i===0?str:parseInt(str,16)
-                    )
-                })
+                        prev+ant,
+                        i===0?str:parseInt(str,16),
+                        i>0&&str.length===2?"word":"single"
+                    );
+                    return ant+(i>0&&str.length===2?1:4);
+                }, 0);
                 lineList[prev] = {
                     number:i,
                     line:validLine
                 };
-                return prev+4*validLine.length;
+                return prev+size;
             };
             //TODO: mudar o loop para que não seja necessário pará-lo dessa forma
             console.log(singleLine);
@@ -416,7 +424,7 @@ function ramEdit(e){
 
 //funções utilitárias
 //Aqui será feita checagem de uma singular linha.
-const codeLineRegex = /^(\w+)[\s^\n]*(( ([0-9a-fA-F]{8})[\s^\n]*((,[\s^\n]+([0-9a-fA-F]{8})[\s^\n]*(;.*)?)|(;.*))?)|(;.*))?$/gi;
+const codeLineRegex = /^(\w+)[\s^\n]*(( ([0-9a-fA-F]{2,8}|e[abcd]x|#[0-9]+)[\s^\n]*((,[\s^\n]+([0-9a-fA-F]{8}|e[abcd]x|#[0-9]+)[\s^\n]*(;.*)?)|(;.*))?)|(;.*))?$/gi;
 function checkLine(line){
     let lineMatch = [...line.matchAll(codeLineRegex)];
     if(lineMatch.length && instructionList[lineMatch[0][1].toLowerCase()]){
