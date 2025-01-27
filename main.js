@@ -269,11 +269,6 @@ async function clock(){
             return;
         }
         const control = cpu.controlUnity;
-        if(control.instruction === "hlt"){
-            end();
-            cpuXram("","",0);
-            return;
-        }
         let instructionResult = instructionList
             [control.instruction][control.step]
             (setVisualRegister, cpuXram, getLinearAddress, cpu);
