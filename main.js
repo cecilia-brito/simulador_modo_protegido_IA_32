@@ -19,7 +19,7 @@ import hlt from "./modules/moves/hlt.js";
 import mov from "./modules/moves/mov.js";
 import pop from "./modules/moves/pop.js";
 import push from "./modules/moves/push.js";
-import xcgh from "./modules/moves/xcgh.js";
+import xchg from "./modules/moves/xchg.js";
 
 // Criação de um objeto com todas as referências de instruções para acesso dinâmico
 const instructionList = {
@@ -44,7 +44,7 @@ const instructionList = {
     mov,
     pop,
     push,
-    xcgh,
+    xchg,
     algo:[(line)=>line],
 };
 
@@ -269,11 +269,6 @@ async function clock(){
             return;
         }
         const control = cpu.controlUnity;
-        if(control.instruction === "hlt"){
-            end();
-            cpuXram("","",0);
-            return;
-        }
         let instructionResult = instructionList
             [control.instruction][control.step]
             (setVisualRegister, cpuXram, getLinearAddress, cpu);
@@ -285,8 +280,13 @@ async function clock(){
         }else{cpu.controlUnity.step++};
     }catch(e){
         end();
-        alert(e.message);
-        console.error(e);
+        if(e.message !== "hlt"){
+            alert(e.message);
+            console.error(e);
+        }else{
+            cpuXram("","",0);
+            alert("Execução terminada com sucesso");
+        }
     };
 };
 clockButton.onclick = clock;
