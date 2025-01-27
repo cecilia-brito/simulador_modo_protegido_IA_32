@@ -14,7 +14,21 @@ const hlt = [
             codeSegment.base+cpu.offsetRegister.ip
         );
         getLinearAddress("ip");
+    },
+    (setVisual, cpuXram, getLinearAddress, cpu)=>{
+        const linearAddress = getLinearAddress("ip");
+        cpuXram(
+            `bus dados<br/>
+            dados = instrução HLT`,
+            "request",
+            linearAddress
+        );
+    },
+    ()=>{
+        //Para a execução com a mensagem de parada.
+        throw new Error("hlt")
     }
+
 ];
 export default hlt;
 

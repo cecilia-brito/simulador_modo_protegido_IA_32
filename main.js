@@ -285,8 +285,13 @@ async function clock(){
         }else{cpu.controlUnity.step++};
     }catch(e){
         end();
-        alert(e.message);
-        console.error(e);
+        if(e.message !== "hlt"){
+            alert(e.message);
+            console.error(e);
+        }else{
+            cpuXram("","",0);
+            alert("Execução terminada com sucesso");
+        }
     };
 };
 clockButton.onclick = clock;
