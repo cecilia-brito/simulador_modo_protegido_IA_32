@@ -107,7 +107,7 @@ const inc = [
     },
     //step 7
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        inc[5]((setVisual, cpuXram, getLinearAddress, cpu))
+        inc[5](setVisual, cpuXram, getLinearAddress, cpu)
     },
     //step 8
     (setVisual, cpuXram, getLinearAddress, cpu)=>{

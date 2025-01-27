@@ -116,7 +116,7 @@ function setVisualRegister(type, register, value){
         for(let i = 0; i < 4; i++){
             const resto = value%(0x100);
             document.getElementById(`ram-${register+i}`).value = '0'.repeat(Math.max(0,2-resto.toString(16).length))+resto.toString(16);
-            value = value >> 8;
+            value = value >>> 8;
         }
         searchRam((register+3).toString(16));
         
