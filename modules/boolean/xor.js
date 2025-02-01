@@ -116,13 +116,9 @@ const xor = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
-<<<<<<< HEAD
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
-=======
             endereço linear = ${dataSegment.base.toString(
               16
             )} + ${cpu.offsetRegister.si.toString(16)}<br/>
->>>>>>> origin/cecilia
             endereço linear = ${(
               dataSegment.base + cpu.offsetRegister.si
             ).toString(16)}`,
