@@ -211,13 +211,17 @@ async function start(){
             const validLine = checkLine(singleLine);
             if(validLine){
                 const size =validLine.reduce((ant, str, i)=>{
-                    setVisualRegister(
-                        "ram",
-                        prev+ant,
-                        i===0?str:parseInt(str,16),
-                        i>0&&str.length===2?"word":"single"
-                    );
-                    return ant+(i>0&&str.length===2?1:4);
+                    console.log(ant);
+                    console.log(str);
+                    if(str != undefined){
+                        setVisualRegister(
+                            "ram",
+                            prev+ant,
+                            i===0?str:parseInt(str,16),
+                            i > 0 && str.lenght === 2 ? "word":"single"
+                        );
+                        return ant+(i>0&&str.lenght===2?1:4);
+                    }
                 }, 0);
                 lineList[prev] = {
                     number:i,

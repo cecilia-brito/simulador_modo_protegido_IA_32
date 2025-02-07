@@ -1,5 +1,7 @@
 //ADD DST, SRC     Add SRC to DST
 //TODO adicionar flags
+//TODO lidar com números negativos
+
 const add = [
     (array) =>{
         if(array[0] != undefined && array[1] != undefined && array[2] != undefined){
@@ -156,6 +158,9 @@ const add = [
     },//step 10
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
         cpu.geralRegister.eax = cpu.geralRegister.eax + cpu.geralRegister.ebx
+        let n1 = cpu.geralRegister.eax.toString(2);
+        let n2 = cpu.geralRegister.ebx.toString(2);
+        cpu.flag.carry = n1[0] == n2[0]; 
         setVisual("geral", "eax", cpu.geralRegister.eax);
         const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
         const linearAddress = getLinearAddress("di");
@@ -167,8 +172,14 @@ const add = [
             "request",
             linearAddress
         )
-        console.log("step 10")
-        setVisual("ram", linearAddress, cpu.geralRegister.eax)
+        console.log("step 10");
+        setVisual("ram", linearAddress, cpu.geralRegister.eax);
+        cpu.flag.zero = cpu.geralRegister.eax === 0;
+        let test_parity = cpu.geralRegister.eax.toString(2);
+        test_parity = test_parity.slice(test_parity.length - 8, test_parity.length - 1);
+        cpu.flag.parity = test_parity == "11111111";
+        test_parity = cpu.geralRegister.eax.toString(2);
+        cpu.flag.sign = test_parity[0];
         return true;
     }
 ];
@@ -253,4 +264,4 @@ export default add;
 // and IA-32 Architectures Software Developer’s Manual, Volume 3A.
 
 // Flags Affected
-// The OF, SF, ZF, AF, CF, and PF flags are set according to the result.
+// The OF, AF, and flags are set according to the result.
