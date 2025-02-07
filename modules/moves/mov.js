@@ -55,6 +55,8 @@ const mov = [
                 codeSegment.base+cpu.offsetRegister.ip
             );
             setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
+            setVisual("offset", "si", control.line[2])
+
             return false
         },
         //step 5
@@ -111,6 +113,8 @@ const mov = [
                 codeSegment.base+cpu.offsetRegister.ip
             );
             setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
+            setVisual("offset", "di", control.line[1])
+
             return false
         },
         //step 9
@@ -168,7 +172,6 @@ const mov = [
                 return false
             },
             //step 12
-            //apresenta erro na hora de mostrar o valor alterado
             (setVisual, cpuXram, getLinearAddress, cpu)=>{
                 const ds = cpu.segmentRegister.ds;
                 const codeSegment = cpu.segmentTable[ds];
