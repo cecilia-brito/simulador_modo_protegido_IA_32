@@ -189,6 +189,8 @@ const cmp = [
             'request',
             linearAddress
         )
+        cpu.flag.zero = subtraction === 0
+        cpu.flag.sign = subtraction.toString(2)[0] === "1"
         return true
     }
 ];
