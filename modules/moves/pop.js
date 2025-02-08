@@ -73,10 +73,10 @@ const pop = [
             linearAddress
         )
         const data = 
-            ram[linearAddress + 3] * 0x1000000 +
-            ram[linearAddress + 2] * 0x10000 +
-            ram[linearAddress + 1] * 0x100 +
-            ram[linearAddress]
+            ram[linearAddress - 3] *  +
+            ram[linearAddress - 2] *  0x100 +
+            ram[linearAddress - 1] * 0x10000 +
+            ram[linearAddress] * 0x1000000
         setVisual('ram', linearAddress-3, cpu.offsetRegister.ip); //?
         setVisual('offset', 'sp', cpu.offsetRegister.sp-4);
         setVisual('geral','eax', data)
@@ -109,6 +109,9 @@ const pop = [
             linearAddress
         )
         setVisual('ram', linearAddress, cpu.geralRegister.eax)
+        cpu.flag.zero = cpu.geralRegister.eax === 0;
+        cpu.flag.carry = !cpu.flag.zero;
+        cpu.flag.overflow = eax === cpu.geralRegister.eax;
         return true
     }
 ];

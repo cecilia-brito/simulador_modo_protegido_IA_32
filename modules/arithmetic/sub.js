@@ -169,7 +169,7 @@ const sub = [
             'request',
             linearAddress
         )
-        setVisual('ram', linearAddress, cpu.geralRegister.eax)
+        cpu.flag.zero = subtraction === 0;
         return true
     }
 
