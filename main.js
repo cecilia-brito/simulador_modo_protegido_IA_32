@@ -215,7 +215,7 @@ async function start(){
                         "ram",
                         prev+ant,
                         i===0?str:parseInt(str,16),
-                        i===0||str.length===2   ?"word":"single"
+                        i===0||str.length!==2   ?"word":"single"
                     );
                     return ant+(i>0&&str.length===2?1:4);
                 }, 0);
