@@ -95,11 +95,13 @@ const cpu = {
             access:0b11,
         },
     },
-    ram: Array(0xFFF).fill(0),
+    ram: Array(0x1000).fill(0),
 };
 
 // Guardando a referência de elementos importantes do html
 const clockButton = document.getElementById("clock"); //botão start/tick/tock
+const endButton = document.getElementById("click"); //botão para finalizar a execução
+const autoButton = document.getElementById("auto"); //botão para tornar automática a execução
 const codeInput = document.getElementById("code"); //local onde o usuário escreve o código
 const ramTable = document.getElementById("ram"); //tabela de registradores da ram
 const busText = document.getElementById("bus-text"); //texto descrevendo a atividade no barramento
@@ -110,6 +112,9 @@ const segmentTable = document.getElementById("segment-table"); //tabela de segme
 const setTableButton = document.getElementById("set-table-button"); //botão que define os novos valores da tabela
 const addTableButton = document.getElementById("add-table-button"); //botão de adiciona um novo valor na tabela
 const segmentSelectors = document.querySelectorAll("input.input-selector"); //Lista com os elementos que representam os seletores de segmento
+
+//Variável que será usada para execução automática
+let autoExecution;
 
 // Função responsável por alterar os valores dos registradores cujo valor é apresentado ao usuário.
 function setVisualRegister(type, register, value, amount="word"){
@@ -198,6 +203,7 @@ function getLinearAddress(offset){
 async function start(){
     // Essa parte será nosso "assembler". Aqui será checada cada linha do código para conferir se ela é válida.
     try{
+        if(!codeInput.textContent)throw new Error("código vazio.");
         cpuXram("","",0);
         Object.keys(cpu.segmentRegister).forEach(val=>{
             if(!Object.keys(cpu.segmentTable).includes(cpu.segmentRegister[val].toString())){
@@ -296,6 +302,7 @@ async function end(){
     setVisualRegister("offset", "ip", 0);
     codeInput.contentEditable = true;
     setTableButton.disabled = false;
+    if(autoExecution)auto();
     clockButton.textContent = "start";
     cpu.controlUnity = {
         instruction: "",
@@ -304,7 +311,19 @@ async function end(){
         line: [],
     };
 };
-document.getElementById("click").onclick = end;
+endButton.onclick = end;
+
+function auto(){
+    if(!clockButton.textContent.includes("start")){
+        if(autoExecution){
+            autoExecution = clearInterval(autoExecution);
+            return;
+        }
+        autoExecution = setInterval(clock, 1000);
+    }
+
+};
+autoButton.onclick = auto;
 
 //Torna a Ram ineditável durante a execução
 async function changeRamEdit(edit){
