@@ -122,7 +122,6 @@ function setVisualRegister(type, register, value, amount="word"){
         if(amount==="word"){
             for(let i = 0; i < 4; i++){
                 if(typeof value === "number"){
-                    console.log(value);
                     const resto = (value>>>0)%(0x100);
                     cpu.ram[register+i] = resto;
                     document.getElementById(`ram-${register+i}`).value = (resto>>>0).toString(16).padStart(2,"0");
@@ -242,7 +241,7 @@ async function start(){
         //na posição 0, estará a primeira linha. Ela será um objeto com o número da linha e a array linha em si.
         cpu.controlUnity.line = lineList[getLinearAddress("ip")].line;
         //Essa será a instrução (primeiro elemento da linha), da primeira linha.
-        cpu.controlUnity.instruction = lineList[0].line[0];
+        cpu.controlUnity.instruction = cpu.controlUnity.line[0];
         cpu.controlUnity.step = 1;
         const ss = cpu.segmentRegister.ss;
         const stackSegment = cpu.segmentTable[ss];
@@ -509,13 +508,14 @@ addTableButton.onclick = e=>{
 }
 
 //Função para checar a alteração na ram
-const hexadecimalRegex = /^[0-9a-fA-F]{2}$/
+const hexadecimalRegex = /^[0-9a-fA-F]{1,2}$/
 function ramEdit(e){
     const target = e.target;
     const i = target.id.slice(4);
     if(!hexadecimalRegex.test(target.value)){
-        target.value = '0'.repeat(Math.max(0,2-cpu.ram[i].toString(16).length))+cpu.ram[i].toString(16);
+        target.value = cpu.ram[i].toString(16).padStart(2,"0");
     }else{
+        target.value = target.value.padStart(2,"0")
         cpu.ram[i] = parseInt(target.value, 16);
     }
 }
@@ -533,20 +533,22 @@ function checkLine(line){
 }
 
 // Inicializando alguns registradores
-setVisualRegister("geral", "eax", 81);
-setVisualRegister("geral", "ebx", 0);
-setVisualRegister("geral", "ecx", 15);
-setVisualRegister("geral", "edx", 4239);
-
-setVisualRegister("segment", "cs", 1);
-setVisualRegister("segment", "ds", 2);
-setVisualRegister("segment", "ss", 3);
-
-setVisualRegister("offset", "ip", 0);
-setVisualRegister("offset", "sp", 563);
-setVisualRegister("offset", "bp", 435);
-setVisualRegister("offset", "si", 233);
-setVisualRegister("offset", "di", 100);
+if(true){
+    setVisualRegister("geral", "eax", 81);
+    setVisualRegister("geral", "ebx", 0);
+    setVisualRegister("geral", "ecx", 15);
+    setVisualRegister("geral", "edx", 4239);
+    
+    setVisualRegister("segment", "cs", 1);
+    setVisualRegister("segment", "ds", 2);
+    setVisualRegister("segment", "ss", 3);
+    
+    setVisualRegister("offset", "ip", 0);
+    setVisualRegister("offset", "sp", 563);
+    setVisualRegister("offset", "bp", 435);
+    setVisualRegister("offset", "si", 233);
+    setVisualRegister("offset", "di", 100);
+}
 
 
 document.addEventListener("DOMContentLoaded", function() {
