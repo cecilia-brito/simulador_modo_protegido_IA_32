@@ -48,12 +48,14 @@ const and = [
         const linearAddress = getLinearAddress("ip");   
         cpuXram(
             `bus dados<br/>
-            Informações do endereço =  ${control.line[2]}<br/>`,
+            Informações do endereço =  ${control.line[1]}<br/>`,
             `get`,
 
             codeSegment.base+cpu.offsetRegister.ip
         );
         setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
+        setVisual("offset", "si", control.line[1])
+
         return false
     },
     //step 5
@@ -89,7 +91,6 @@ const and = [
             codeSegment.base+cpu.offsetRegister.si
         );
         setVisual("geral", "eax", data)
-        setVisual("ram", linearAddress, data + 1)
         return false
     },
     //step 7
@@ -105,17 +106,31 @@ const and = [
         const linearAddress = getLinearAddress("ip");   
         cpuXram(
             `bus dados<br/>
-            Informações do endereço =  ${control.line[1]}<br/>`,
+            Informações do endereço =  ${control.line[2]}<br/>`,
             `get`,
 
             codeSegment.base+cpu.offsetRegister.ip
         );
         setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
+        setVisual("offset", "di", control.line[1])
+
         return false
     },
     //step 9
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        and[5](setVisual, cpuXram, getLinearAddress, cpu)
+        const ds = cpu.segmentRegister.ds;
+        const codeSegment = cpu.segmentTable[ds];
+
+        const linearAddress = getLinearAddress("di");
+
+        cpuXram(
+            `bus endereço<br/>
+            endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.di}<br/>
+            endereço linear = ${codeSegment.base + cpu.offsetRegister.di}`,
+            "request",
+            codeSegment.base+cpu.offsetRegister.di
+        );
+        return false
     },
     //step 10
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
@@ -123,7 +138,7 @@ const and = [
         const codeSegment = cpu.segmentTable[ds];
         const ram = cpu.ram
 
-        const linearAddress = getLinearAddress("si");
+        const linearAddress = getLinearAddress("di");
         const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
 
         cpuXram(
@@ -131,12 +146,47 @@ const and = [
             informações do endereço = ${data}`,
             `get`,
 
-            codeSegment.base+cpu.offsetRegister.si
+            codeSegment.base+cpu.offsetRegister.di
         );
-        setVisual("geral", "eax", data)
-        setVisual("ram", linearAddress, data)
+        setVisual("geral", "ebx", data)
+        setVisual("ram", linearAddress, eax & ebx)
         return false
     },
+        //step 11
+        (setVisual, cpuXram, getLinearAddress, cpu)=>{
+            const ds = cpu.segmentRegister.ds;
+            const codeSegment = cpu.segmentTable[ds];
     
+            const linearAddress = getLinearAddress("di");
+    
+            cpuXram(
+                `bus endereço<br/>
+                endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.si}<br/>
+                endereço linear = ${codeSegment.base + cpu.offsetRegister.di}`,
+                "request",
+                codeSegment.base+cpu.offsetRegister.di
+            );
+            return false
+        },
+        //step 12
+        (setVisual, cpuXram, getLinearAddress, cpu)=>{
+            const ds = cpu.segmentRegister.ds;
+            const codeSegment = cpu.segmentTable[ds];
+            const ram = cpu.ram
+    
+            const linearAddress = getLinearAddress("di");
+            const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
+    
+            cpuXram(
+                `bus dados<br/>
+                informações do endereço = ${data}`,
+                `get`,
+    
+                codeSegment.base+cpu.offsetRegister.di
+            );
+            setVisual("geral", "eax", data)
+            
+            return true
+        }
 ];
 export default and;
