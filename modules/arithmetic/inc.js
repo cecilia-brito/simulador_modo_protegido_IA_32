@@ -66,7 +66,7 @@ const inc = [
             codeSegment.base+cpu.offsetRegister.ip
         );
         setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
-        setVisual("offset", "si", cpu.offsetRegister.si)
+        setVisual("offset", "si", control.line[1])
         return false
     },
     //step 5
@@ -107,7 +107,21 @@ const inc = [
     },
     //step 7
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        inc[5](setVisual, cpuXram, getLinearAddress, cpu)
+        setVisual("offset", "di", control.line[1])
+
+        const ds = cpu.segmentRegister.ds;
+        const codeSegment = cpu.segmentTable[ds];
+
+        const linearAddress = getLinearAddress("di");
+
+        cpuXram(
+            `bus endereço<br/>
+            endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.di}<br/>
+            endereço linear = ${codeSegment.base + cpu.offsetRegister.di}`,
+            "request",
+            codeSegment.base+cpu.offsetRegister.di
+        );
+        return false
     },
     //step 8
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
@@ -115,7 +129,7 @@ const inc = [
         const codeSegment = cpu.segmentTable[ds];
         const ram = cpu.ram
 
-        const linearAddress = getLinearAddress("si");
+        const linearAddress = getLinearAddress("di");
         const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
 
         cpuXram(

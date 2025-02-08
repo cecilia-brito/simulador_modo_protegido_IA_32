@@ -48,12 +48,14 @@ const and = [
         const linearAddress = getLinearAddress("ip");   
         cpuXram(
             `bus dados<br/>
-            Informações do endereço =  ${control.line[2]}<br/>`,
+            Informações do endereço =  ${control.line[1]}<br/>`,
             `get`,
 
             codeSegment.base+cpu.offsetRegister.ip
         );
         setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
+        setVisual("offset", "si", control.line[1])
+
         return false
     },
     //step 5
@@ -104,12 +106,14 @@ const and = [
         const linearAddress = getLinearAddress("ip");   
         cpuXram(
             `bus dados<br/>
-            Informações do endereço =  ${control.line[1]}<br/>`,
+            Informações do endereço =  ${control.line[2]}<br/>`,
             `get`,
 
             codeSegment.base+cpu.offsetRegister.ip
         );
         setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
+        setVisual("offset", "di", control.line[1])
+
         return false
     },
     //step 9
