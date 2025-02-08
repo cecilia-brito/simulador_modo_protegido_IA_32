@@ -189,7 +189,7 @@ function getLinearAddress(offset){
     const sum = segment.base+offsetValue;
     gpf = sum>segment.limit;
     if(gpf){
-        throw new Error(message+ `. Programa tentou acessar valor em ${sum}, porém o limite é ${segment.limit}`);
+        throw new Error(message+ `. Programa tentou acessar valor em ${sum.toString(16).padStart(8,"0")}, porém o limite é ${segment.limit.toString(16).padStart(8,"0")}`);
     };
     return sum;
 }
@@ -215,7 +215,7 @@ async function start(){
                         "ram",
                         prev+ant,
                         i===0?str:parseInt(str,16),
-                        i>0&&str.length===2?"word":"single"
+                        i===0||str.length===2   ?"word":"single"
                     );
                     return ant+(i>0&&str.length===2?1:4);
                 }, 0);
