@@ -57,6 +57,7 @@ const inc = [
         const codeSegment = cpu.segmentTable[cs];
         
         const control = cpu.controlUnity
+        const dataAdress = (parseInt(control.line[1]));
         const linearAddress = getLinearAddress("ip");   
         cpuXram(
             `bus dados<br/>
@@ -66,7 +67,7 @@ const inc = [
             codeSegment.base+cpu.offsetRegister.ip
         );
         setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
-        setVisual("offset", "si", control.line[1])
+        setVisual("offset", "si", dataAdress)
         return false
     },
     //step 5
@@ -107,7 +108,9 @@ const inc = [
     },
     //step 7
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        setVisual("offset", "di", control.line[1])
+        const control = cpu.controlUnity
+        const dataAdress = (parseInt(control.line[1]));
+        setVisual("offset", "di", dataAdress)
 
         const ds = cpu.segmentRegister.ds;
         const codeSegment = cpu.segmentTable[ds];
