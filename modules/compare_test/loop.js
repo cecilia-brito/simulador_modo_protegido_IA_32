@@ -35,12 +35,10 @@ const loop = [
     //step 4
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
         const linearAddress = getLinearAddress("ip");
-        console.log(cpu.controlUnity)
         const disp = cpu.controlUnity.line[1];
         let realDisp = parseInt(disp,16)
             .toString(2);
         if(realDisp.length===8){
-            console.log(realDisp)
             realDisp = realDisp
                 .replaceAll("0", "2")
                 .replaceAll("1", "0")
