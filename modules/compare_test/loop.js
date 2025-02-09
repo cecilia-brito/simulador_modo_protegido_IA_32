@@ -49,7 +49,8 @@ const loop = [
             `bus dados<br/>
             dados: ${disp}`,
             "get",
-            linearAddress
+            linearAddress,
+            "single"
         );
         setVisual("offset","ip",cpu.offsetRegister.ip+realDisp);
         return true;

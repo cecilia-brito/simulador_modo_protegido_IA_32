@@ -109,7 +109,7 @@ const neg = [
         setVisual("ram", linearAddress, cpu.geralRegister.eax);
         cpu.flag.zero = cpu.geralRegister.eax === 0;
         cpu.flag.carry = !cpu.flag.zero;
-        cpu.flag.sign = twoComp[0]==="1"&&!twoComp.split("").every(a=>a==="1");
+        cpu.flag.sign = twoComp[0]==="1"&&eax!==0;
         cpu.flag.overflow = eax === cpu.geralRegister.eax;
         return true;
     }

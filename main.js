@@ -159,7 +159,7 @@ function setVisualRegister(type, register, value, amount="word"){
 };
 
 // Função responsável por alterar visualmente a área entre os dados do registradores e a tabela da ram.
-function cpuXram(desc, type, data){
+function cpuXram(desc, type, data, dataType = ""){
     busText.innerHTML = desc;
     switch(type){
         case "request":
@@ -173,7 +173,7 @@ function cpuXram(desc, type, data){
             break;
     };
     if(typeof data === "number"){
-        searchRam(data.toString(16));
+        searchRam(data.toString(16), dataType);
     };
 };
 
@@ -257,7 +257,7 @@ async function start(){
         //Essa será a instrução (primeiro elemento da linha), da primeira linha.
         cpu.controlUnity.instruction = cpu.controlUnity.line[0];
         cpu.controlUnity.step = 1;
-        changeRegisterEdit(false);
+        changeRegisterEdit(true);
         return true;
     }catch(e){
         codeInput.contentEditable = true;
@@ -310,7 +310,7 @@ clockButton.onclick = clock;
 
 async function end(){
     await changeRamEdit(true);
-    changeRegisterEdit(true);
+    changeRegisterEdit(false);
     setVisualRegister("offset", "ip", 0);
     emptyHighlighted();
     codeInput.contentEditable = true;
@@ -351,12 +351,12 @@ async function changeRamEdit(edit){
 };
 
 //scrolla a tela até a posição informada da ram estar visível.
-function searchRam(input){
+function searchRam(input, type = ""){
     const input16 = parseInt(input, 16);
     if(input16 !== NaN && input16 < cpu.ram.length){
         input = input16;
         document.getElementById(`ram-${input}`).scrollIntoView();
-        for(let i = 0; i < 4; i++){
+        for(let i = 0; i < type==="single"?1:4; i++){
             const label = document.getElementById(`ram-label-${input+i}`);
             label.classList.add("highlight");
             highlighted.push(label);
