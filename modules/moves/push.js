@@ -2,7 +2,7 @@
 const push = [
     (array)=>{
         if(array[0] != undefined && array[1] != undefined && array[2] == undefined){
-            return array;
+            return [array[0], array[1]];
         }
         console.log(array);
     },
