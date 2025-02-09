@@ -12,8 +12,8 @@ const or  = [
         cpuXram(
             //desc
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base.toString(16)} + ${cpu.offsetRegister.ip.toString(16)}<br/>
-            endereço linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(16)}`,
+            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -61,7 +61,7 @@ const or  = [
         cpuXram(
             //desc
             `Bus Dados<br>`
-           +`${data.toString(16)}`,
+           +`${showHexa(data)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -79,8 +79,8 @@ const or  = [
         const dataSegment = cpu.segmentTable[ds];
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.si.toString(16)}<br/>
-            endereço linear = ${(dataSegment.base + cpu.offsetRegister.si).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.si)}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.si)}`,
             "request",
             dataSegment.base+cpu.offsetRegister.si
         );
@@ -97,7 +97,7 @@ const or  = [
         console.log(linearAddress)
         cpuXram(
             `bus dados<br/>
-            dados: ${data.toString(16)}`,
+            dados: ${showHexa(data)}`,
             "get",
             codeSegment.base+cpu.offsetRegister.si
         );
@@ -115,7 +115,7 @@ const or  = [
         cpuXram(
             //desc
             `Bus Dados<br>`
-           +`${data.toString(16)}`,
+           +`${showHexa(data)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -144,7 +144,7 @@ const or  = [
         console.log(linearAddress)
         cpuXram(
             `bus dados<br/>
-            dados: ${data.toString(16)}`,
+            dados: ${showHexa(data)}`,
             "get",
             codeSegment.base+cpu.offsetRegister.si
         );
@@ -159,15 +159,31 @@ const or  = [
         const linearAddress = getLinearAddress("di");
         cpuXram(
             `bus dados<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${linearAddress.toString(16)}<br/>
-            dados: ${cpu.geralRegister.eax.toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(linearAddress)}<br/>
+            dados: ${showHexa(cpu.geralRegister.eax)}`,
             "request",
             linearAddress
         )
+//         Flags Affected
+// The OF and CF flags are cleared; the SF, ZF, and PF flags are set according to the result. The state of the AF flag is
+// undefined
+        cpu.flag.overflow =  false;
+        cpu.flag.carry = false;
+        cpu.flag.zero = cpu.geralRegister == 0;
+        let twoComp = (cpu.geralRegister.eax>>>0).toString(2);
+        cpu.flag.zero = twoComp == 0;
+        let test_parity = twoComp;
+        test_parity = test_parity.slice(test_parity.length - 8, test_parity.length - 1);
+        cpu.flag.parity = test_parity == "11111111";        
+        cpu.flag.sign = twoComp[0]==="1"&&!twoComp.split("").every(a=>a==="1")
         console.log("step 10")
         setVisual("ram", linearAddress, cpu.geralRegister.eax)
         return true;
     }
 ];
 export default or;
+
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}
