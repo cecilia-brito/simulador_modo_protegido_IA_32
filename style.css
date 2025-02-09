@@ -8,6 +8,11 @@ ul{
     list-style: none;
 }
 
+.highlight{
+    transition: all ease-in-out .5s;
+    background-color: blue;
+}
+
 .box{
     border: 1px solid white;
     width: auto;
@@ -34,7 +39,7 @@ ul{
 }
 
 .container__wrapper{
-    width: 100%;
+    width: 65%;
     display: flex;
     flex-direction: column;
 }
@@ -58,7 +63,7 @@ ul{
 }
 
 .container__registers{
-    width: 100%;
+    width: 50%;
 }
 
 .container__bus{
@@ -77,6 +82,7 @@ ul{
 
 .container__ram__table{
     margin: 0;
+    padding: 0;
     overflow-y: scroll;
     overflow-x: hidden;
     max-height: 100%;

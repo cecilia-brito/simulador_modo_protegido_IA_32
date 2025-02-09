@@ -116,37 +116,50 @@ const segmentSelectors = document.querySelectorAll("input.input-selector"); //Li
 //Variável que será usada para execução automática
 let autoExecution;
 
+const highlighted = [];
+
 // Função responsável por alterar os valores dos registradores cujo valor é apresentado ao usuário.
 function setVisualRegister(type, register, value, amount="word"){
     if(type === "ram"){
         if(amount==="word"){
             for(let i = 0; i < 4; i++){
                 if(typeof value === "number"){
-                    console.log(value);
                     const resto = (value>>>0)%(0x100);
                     cpu.ram[register+i] = resto;
                     document.getElementById(`ram-${register+i}`).value = (resto>>>0).toString(16).padStart(2,"0");
+                    const label = document.getElementById(`ram-label-${register+i}`);
+                    label.classList.add("highlight");
+                    highlighted.push(label);
                     value = value >>> 8;
                 }else{
                     cpu.ram[register+i] = value;
                     document.getElementById(`ram-${register+i}`).value = value;
+                    const label = document.getElementById(`ram-label-${register+i}`);
+                    label.classList.add("highlight");
+                    highlighted.push(label);
                 }
             }
         }else if(amount==="single"){
             document.getElementById(`ram-${register}`).value = value.toString(16).padStart(2,"0");
             cpu.ram[register] = value;
+            const label = document.getElementById(`ram-label-${register}`);
+            label.classList.add("highlight");
+            highlighted.push(label);
         }
         searchRam((register+3).toString(16));  
     }else{
         let valueTo16 = (value>>>0).toString(16);
         cpu[type+"Register"][register] = value;
         valueTo16 = valueTo16.padStart(type==="segment"?4:8, '0');
-        document.getElementById(register).value = valueTo16;    
+        const registerInput = document.getElementById(register);
+        registerInput.value = valueTo16;    
+        registerInput.classList.add("highlight");
+        highlighted.push(registerInput);
     }
 };
 
 // Função responsável por alterar visualmente a área entre os dados do registradores e a tabela da ram.
-function cpuXram(desc, type, data){
+function cpuXram(desc, type, data, dataType = ""){
     busText.innerHTML = desc;
     switch(type){
         case "request":
@@ -159,8 +172,8 @@ function cpuXram(desc, type, data){
             busArrow.innerHTML = "&#x2B1A"; //quadrado pontilhado(sujeito a mudança)
             break;
     };
-    if(data){
-        searchRam(data.toString(16));
+    if(typeof data === "number"){
+        searchRam(data.toString(16), dataType);
     };
 };
 
@@ -242,13 +255,9 @@ async function start(){
         //na posição 0, estará a primeira linha. Ela será um objeto com o número da linha e a array linha em si.
         cpu.controlUnity.line = lineList[getLinearAddress("ip")].line;
         //Essa será a instrução (primeiro elemento da linha), da primeira linha.
-        cpu.controlUnity.instruction = lineList[0].line[0];
+        cpu.controlUnity.instruction = cpu.controlUnity.line[0];
         cpu.controlUnity.step = 1;
-        const ss = cpu.segmentRegister.ss;
-        const stackSegment = cpu.segmentTable[ss];
-        let spValue = stackSegment.limit - stackSegment.base;
-        setVisualRegister("offset", "sp", spValue);
-        setVisualRegister("offset", "bp", spValue);
+        changeRegisterEdit(true);
         return true;
     }catch(e){
         codeInput.contentEditable = true;
@@ -275,6 +284,8 @@ async function clock(){
             return;
         }
         const control = cpu.controlUnity;
+        emptyHighlighted();
+        highlighted.forEach
         let instructionResult = instructionList
             [control.instruction][control.step]
             (setVisualRegister, cpuXram, getLinearAddress, cpu);
@@ -299,7 +310,9 @@ clockButton.onclick = clock;
 
 async function end(){
     await changeRamEdit(true);
+    changeRegisterEdit(false);
     setVisualRegister("offset", "ip", 0);
+    emptyHighlighted();
     codeInput.contentEditable = true;
     setTableButton.disabled = false;
     if(autoExecution)auto();
@@ -325,6 +338,10 @@ function auto(){
 };
 autoButton.onclick = auto;
 
+function changeRegisterEdit(edit){
+    segmentSelectors.forEach((selector,i)=>i<10&&(selector.disabled = edit));
+};
+
 //Torna a Ram ineditável durante a execução
 async function changeRamEdit(edit){
     return Promise.resolve().then(()=>{
@@ -334,11 +351,16 @@ async function changeRamEdit(edit){
 };
 
 //scrolla a tela até a posição informada da ram estar visível.
-function searchRam(input){
+function searchRam(input, type = ""){
     const input16 = parseInt(input, 16);
     if(input16 !== NaN && input16 < cpu.ram.length){
         input = input16;
-        document.getElementById(`ram-${input16}`).scrollIntoView();
+        document.getElementById(`ram-${input}`).scrollIntoView();
+        for(let i = 0; i < type==="single"?1:4; i++){
+            const label = document.getElementById(`ram-label-${input+i}`);
+            label.classList.add("highlight");
+            highlighted.push(label);
+        }
     }else{
         alert("Endereço inválido");
         return;
@@ -355,10 +377,15 @@ searchRamForm.lastElementChild.onclick = e=>{
     searchRam(input);
 };
 
+function emptyHighlighted(){
+    while(highlighted.length){
+        highlighted.pop().classList.remove("highlight")
+    }
+}
+
 const hexadecimalRegex4 = /^[0-9a-fA-F]{4}$/
 const hexadecimalRegex8 = /^[0-9a-fA-F]{8}$/
 function segmentSelectorEdit(e, name){
-    console.log(cpu)
     const target = e.target;
     if(name[0]==="segment" && hexadecimalRegex4.test(target.value)){
         const index = parseInt(target.value,16);
@@ -432,8 +459,7 @@ segmentForm.onsubmit = e=>{
             for(let i = 0; i < formRef.length-1; i += 4){
                 setTableData([formRef[i].value, formRef[i+1].value, formRef[i+2].value, formRef[i+3].value], obj);
             }
-            cpu.segmentTable = obj; 
-            console.log(cpu.segmentTable)
+            cpu.segmentTable = obj;
             return
         }
     };
@@ -494,7 +520,7 @@ function addTableData (){
         access: 3
     };
 
-    segmentTable.appendChild(newRow)
+    segmentTable.appendChild(newRow);
 }
 addTableButton.onclick = e=>{
     const result = addTableData();
@@ -509,13 +535,14 @@ addTableButton.onclick = e=>{
 }
 
 //Função para checar a alteração na ram
-const hexadecimalRegex = /^[0-9a-fA-F]{2}$/
+const hexadecimalRegex = /^[0-9a-fA-F]{1,2}$/
 function ramEdit(e){
     const target = e.target;
     const i = target.id.slice(4);
     if(!hexadecimalRegex.test(target.value)){
-        target.value = '0'.repeat(Math.max(0,2-cpu.ram[i].toString(16).length))+cpu.ram[i].toString(16);
+        target.value = cpu.ram[i].toString(16).padStart(2,"0");
     }else{
+        target.value = target.value.padStart(2,"0")
         cpu.ram[i] = parseInt(target.value, 16);
     }
 }
@@ -533,20 +560,23 @@ function checkLine(line){
 }
 
 // Inicializando alguns registradores
-setVisualRegister("geral", "eax", 81);
-setVisualRegister("geral", "ebx", 0);
-setVisualRegister("geral", "ecx", 15);
-setVisualRegister("geral", "edx", 4239);
-
-setVisualRegister("segment", "cs", 1);
-setVisualRegister("segment", "ds", 2);
-setVisualRegister("segment", "ss", 3);
-
-setVisualRegister("offset", "ip", 0);
-setVisualRegister("offset", "sp", 563);
-setVisualRegister("offset", "bp", 435);
-setVisualRegister("offset", "si", 233);
-setVisualRegister("offset", "di", 100);
+if(true){
+    setVisualRegister("geral", "eax", 81);
+    setVisualRegister("geral", "ebx", 0);
+    setVisualRegister("geral", "ecx", 15);
+    setVisualRegister("geral", "edx", 4239);
+    
+    setVisualRegister("segment", "cs", 1);
+    setVisualRegister("segment", "ds", 2);
+    setVisualRegister("segment", "ss", 3);
+    
+    setVisualRegister("offset", "ip", 0);
+    setVisualRegister("offset", "sp", cpu.segmentTable[cpu.segmentRegister.ss].limit-cpu.segmentTable[cpu.segmentRegister.ss].base);
+    setVisualRegister("offset", "bp", cpu.offsetRegister.sp);
+    setVisualRegister("offset", "si", 233);
+    setVisualRegister("offset", "di", 100);
+    emptyHighlighted();
+}
 
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -563,6 +593,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 newLiSpan.textContent = '0'.repeat(Math.max(0,8-i.toString(16).length))+i.toString(16);
                 newLiSpan.classList.add("box");
                 newLiSpan.classList.add("ram-desc");
+                newLiSpan.id = `ram-label-${i}`;
                 newLi.appendChild(newLiSpan);
 
                 const newLiInput = document.createElement("input");
