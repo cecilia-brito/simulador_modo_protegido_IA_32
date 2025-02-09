@@ -59,6 +59,9 @@ const mov = [
             setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
             setVisual("offset", "si", dataAdress)
 
+            if(control.line[1]==="eax"){
+                control.step = 12;
+            }
             return false
         },
         //step 5
@@ -193,6 +196,6 @@ const mov = [
                 setVisual("geral", "eax", data)
                 
                 return true
-            }
+            },
     ];
 export default mov;

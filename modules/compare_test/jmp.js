@@ -53,9 +53,10 @@ const jmp = [
         const cs = cpu.segmentRegister.cs;
         const codeSegment = cpu.segmentTable[cs];
         const control = cpu.controlUnity
-        const dataAdress = (parseInt(control.line[1]));
+        const dataAdress = (parseInt(control.line[1], 16));
 
         setVisual("offset", "ip", dataAdress)
+        console.log(cpu)
 
         cpuXram(
             
