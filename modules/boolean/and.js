@@ -142,11 +142,11 @@ const and = [
         const ds = cpu.segmentRegister.ds;
         const codeSegment = cpu.segmentTable[ds];
         const ram = cpu.ram
-        const eax = cpu.geralRegister.eax;
+        const eax =  cpu.geralRegister.eax
         
         const linearAddress = getLinearAddress("si");
         const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
-
+        
         cpuXram(
             `bus dados<br/>
             informações do endereço = ${data}`,
@@ -154,9 +154,8 @@ const and = [
             
             codeSegment.base+cpu.offsetRegister.di
         );
-        setVisual("geral", "ebx", data);
-        const ebx = cpu.geralRegister.ebx;
-        console.log(eax.toString(2), ebx.toString(2), (eax&ebx).toString(2))
+        setVisual("geral", "ebx", data)
+        const ebx = cpu.geralRegister.ebx
         setVisual("geral", "eax", eax & ebx)
         return false
     },
@@ -181,8 +180,8 @@ const and = [
         const ds = cpu.segmentRegister.ds;
         const codeSegment = cpu.segmentTable[ds];
         const ram = cpu.ram
-        const eax = cpu.geralRegister.eax
-        
+        const eax =  cpu.geralRegister.eax
+
         const linearAddress = getLinearAddress("di");
         const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
         setVisual("ram", linearAddress, eax)
