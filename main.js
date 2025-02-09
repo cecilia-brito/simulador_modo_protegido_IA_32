@@ -243,11 +243,7 @@ async function start(){
         //Essa será a instrução (primeiro elemento da linha), da primeira linha.
         cpu.controlUnity.instruction = cpu.controlUnity.line[0];
         cpu.controlUnity.step = 1;
-        const ss = cpu.segmentRegister.ss;
-        const stackSegment = cpu.segmentTable[ss];
-        let spValue = stackSegment.limit - stackSegment.base;
-        setVisualRegister("offset", "sp", spValue);
-        setVisualRegister("offset", "bp", spValue);
+        changeRegisterEdit(false);
         return true;
     }catch(e){
         codeInput.contentEditable = true;
@@ -298,6 +294,7 @@ clockButton.onclick = clock;
 
 async function end(){
     await changeRamEdit(true);
+    changeRegisterEdit(true);
     setVisualRegister("offset", "ip", 0);
     codeInput.contentEditable = true;
     setTableButton.disabled = false;
@@ -323,6 +320,10 @@ function auto(){
 
 };
 autoButton.onclick = auto;
+
+function changeRegisterEdit(edit){
+    segmentSelectors.forEach((selector,i)=>i<10&&(selector.disabled = edit));
+};
 
 //Torna a Ram ineditável durante a execução
 async function changeRamEdit(edit){
@@ -493,7 +494,7 @@ function addTableData (){
         access: 3
     };
 
-    segmentTable.appendChild(newRow)
+    segmentTable.appendChild(newRow);
 }
 addTableButton.onclick = e=>{
     const result = addTableData();
@@ -544,8 +545,8 @@ if(true){
     setVisualRegister("segment", "ss", 3);
     
     setVisualRegister("offset", "ip", 0);
-    setVisualRegister("offset", "sp", 563);
-    setVisualRegister("offset", "bp", 435);
+    setVisualRegister("offset", "sp", cpu.segmentTable[cpu.segmentRegister.ss].limit-cpu.segmentTable[cpu.segmentRegister.ss].base);
+    setVisualRegister("offset", "bp", cpu.offsetRegister.sp);
     setVisualRegister("offset", "si", 233);
     setVisualRegister("offset", "di", 100);
 }
