@@ -116,6 +116,8 @@ const segmentSelectors = document.querySelectorAll("input.input-selector"); //Li
 //Variável que será usada para execução automática
 let autoExecution;
 
+const highlighted = [];
+
 // Função responsável por alterar os valores dos registradores cujo valor é apresentado ao usuário.
 function setVisualRegister(type, register, value, amount="word"){
     if(type === "ram"){
@@ -125,22 +127,34 @@ function setVisualRegister(type, register, value, amount="word"){
                     const resto = (value>>>0)%(0x100);
                     cpu.ram[register+i] = resto;
                     document.getElementById(`ram-${register+i}`).value = (resto>>>0).toString(16).padStart(2,"0");
+                    const label = document.getElementById(`ram-label-${register+i}`);
+                    label.classList.add("highlight");
+                    highlighted.push(label);
                     value = value >>> 8;
                 }else{
                     cpu.ram[register+i] = value;
                     document.getElementById(`ram-${register+i}`).value = value;
+                    const label = document.getElementById(`ram-label-${register+i}`);
+                    label.classList.add("highlight");
+                    highlighted.push(label);
                 }
             }
         }else if(amount==="single"){
             document.getElementById(`ram-${register}`).value = value.toString(16).padStart(2,"0");
             cpu.ram[register] = value;
+            const label = document.getElementById(`ram-label-${register}`);
+            label.classList.add("highlight");
+            highlighted.push(label);
         }
         searchRam((register+3).toString(16));  
     }else{
         let valueTo16 = (value>>>0).toString(16);
         cpu[type+"Register"][register] = value;
         valueTo16 = valueTo16.padStart(type==="segment"?4:8, '0');
-        document.getElementById(register).value = valueTo16;    
+        const registerInput = document.getElementById(register);
+        registerInput.value = valueTo16;    
+        registerInput.classList.add("highlight");
+        highlighted.push(registerInput);
     }
 };
 
@@ -158,7 +172,7 @@ function cpuXram(desc, type, data){
             busArrow.innerHTML = "&#x2B1A"; //quadrado pontilhado(sujeito a mudança)
             break;
     };
-    if(data){
+    if(typeof data === "number"){
         searchRam(data.toString(16));
     };
 };
@@ -270,6 +284,8 @@ async function clock(){
             return;
         }
         const control = cpu.controlUnity;
+        emptyHighlighted();
+        highlighted.forEach
         let instructionResult = instructionList
             [control.instruction][control.step]
             (setVisualRegister, cpuXram, getLinearAddress, cpu);
@@ -296,6 +312,7 @@ async function end(){
     await changeRamEdit(true);
     changeRegisterEdit(true);
     setVisualRegister("offset", "ip", 0);
+    emptyHighlighted();
     codeInput.contentEditable = true;
     setTableButton.disabled = false;
     if(autoExecution)auto();
@@ -338,7 +355,12 @@ function searchRam(input){
     const input16 = parseInt(input, 16);
     if(input16 !== NaN && input16 < cpu.ram.length){
         input = input16;
-        document.getElementById(`ram-${input16}`).scrollIntoView();
+        document.getElementById(`ram-${input}`).scrollIntoView();
+        for(let i = 0; i < 4; i++){
+            const label = document.getElementById(`ram-label-${input+i}`);
+            label.classList.add("highlight");
+            highlighted.push(label);
+        }
     }else{
         alert("Endereço inválido");
         return;
@@ -355,10 +377,15 @@ searchRamForm.lastElementChild.onclick = e=>{
     searchRam(input);
 };
 
+function emptyHighlighted(){
+    while(highlighted.length){
+        highlighted.pop().classList.remove("highlight")
+    }
+}
+
 const hexadecimalRegex4 = /^[0-9a-fA-F]{4}$/
 const hexadecimalRegex8 = /^[0-9a-fA-F]{8}$/
 function segmentSelectorEdit(e, name){
-    console.log(cpu)
     const target = e.target;
     if(name[0]==="segment" && hexadecimalRegex4.test(target.value)){
         const index = parseInt(target.value,16);
@@ -432,8 +459,7 @@ segmentForm.onsubmit = e=>{
             for(let i = 0; i < formRef.length-1; i += 4){
                 setTableData([formRef[i].value, formRef[i+1].value, formRef[i+2].value, formRef[i+3].value], obj);
             }
-            cpu.segmentTable = obj; 
-            console.log(cpu.segmentTable)
+            cpu.segmentTable = obj;
             return
         }
     };
@@ -549,6 +575,7 @@ if(true){
     setVisualRegister("offset", "bp", cpu.offsetRegister.sp);
     setVisualRegister("offset", "si", 233);
     setVisualRegister("offset", "di", 100);
+    emptyHighlighted();
 }
 
 
@@ -566,6 +593,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 newLiSpan.textContent = '0'.repeat(Math.max(0,8-i.toString(16).length))+i.toString(16);
                 newLiSpan.classList.add("box");
                 newLiSpan.classList.add("ram-desc");
+                newLiSpan.id = `ram-label-${i}`;
                 newLi.appendChild(newLiSpan);
 
                 const newLiInput = document.createElement("input");

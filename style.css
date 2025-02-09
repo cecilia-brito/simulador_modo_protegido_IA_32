@@ -8,6 +8,10 @@ ul{
     list-style: none;
 }
 
+.highlight{
+    background-color: blue;
+}
+
 .box{
     border: 1px solid white;
     width: auto;
