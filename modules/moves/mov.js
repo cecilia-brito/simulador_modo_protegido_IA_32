@@ -57,6 +57,14 @@ const mov = [
                 codeSegment.base+cpu.offsetRegister.ip
             );
             setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
+            if(
+            control.line[1]  === "eax"|| 
+            control.line[1] === "ebx" || 
+            control.line[1] === "ecx"|| 
+            control.line[1] === "edx"
+            ){
+                controlUnity.step = 13
+            }
             setVisual("offset", "si", dataAdress)
             setVisual("offset", "di", dataAdress)
 
@@ -194,6 +202,20 @@ const mov = [
                 setVisual("geral", "eax", data)
                 
                 return true
-            }
+            },
+            //step 13
+            (setVisual, cpuXram, getLinearAddress, cpu)=>{
+                const ds = cpu.segmentRegister.ds;
+                const codeSegment = cpu.segmentTable[ds];
+        
+                cpuXram(
+                    `bus dados<br/>
+                    informações do registrador = ${cpu.geralRegister[cpu.controlUnity.line[1].toLowerCase()]}`,
+                    `get`,
+        
+                );
+                controlUnity.step = 7
+                return false
+            },
     ];
 export default mov;
