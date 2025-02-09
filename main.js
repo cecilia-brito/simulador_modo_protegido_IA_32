@@ -240,6 +240,7 @@ async function start(){
             const validLine = checkLine(singleLine);
             if(validLine){
                 const size =validLine.reduce((ant, str, i)=>{
+                    if(validLine[0].toLowerCase()==="jxx" && i===2) return ant;
                     setVisualRegister(
                         "ram",
                         prev+ant,

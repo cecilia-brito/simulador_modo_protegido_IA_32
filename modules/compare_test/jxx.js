@@ -37,7 +37,7 @@ const jxx = [
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
         const cs = cpu.segmentRegister.cs;
         const codeSegment = cpu.segmentTable[cs];
-		getLinearAddress("ip");
+		
         cpuXram(
             //desc
             `bus endereço<br/>
@@ -71,8 +71,22 @@ const jxx = [
         return false;
     },(setVisual, cpuXram, getLinearAddress, cpu) =>{
         jxx[1](setVisual, cpuXram, getLinearAddress, cpu);
-    }, (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        let condition = cpu.controlUnity[2]
+	},(setVisual, cpuXram, getLinearAddress, cpu) =>{
+		const cs = cpu.segmentRegister.cs;
+        const codeSegment = cpu.segmentTable[cs];
+        const control = cpu.controlUnity
+
+        cpuXram(
+            `Endereço para o salto =  ${control.line[1]}<br/>`,
+            codeSegment.base+cpu.offsetRegister.ip
+        );
+        const linearAddress = getLinearAddress("ip");
+		console.log('step 4')
+        return false
+	},
+     (setVisual, cpuXram, getLinearAddress, cpu)=>{
+        let condition = cpu.controlUnity.line[2]
+		console.log(cpu.controlUnity)
         switch (condition) {
             case "G":
                 if(cpu.flag.zero == false && cpu.flag.sign == false){
@@ -80,8 +94,8 @@ const jxx = [
                     const codeSegment = cpu.segmentTable[cs];
                     const control = cpu.controlUnity
                     const dataAdress = (parseInt(control.line[1], 16));
-
                     setVisual("offset", "ip", dataAdress)
+					
                     console.log(cpu)
 
                     cpuXram(
@@ -99,6 +113,7 @@ const jxx = [
                     const dataAdress = (parseInt(control.line[1], 16));
 
                     setVisual("offset", "ip", dataAdress)
+					
                     console.log(cpu)
 
                     cpuXram(
@@ -116,6 +131,7 @@ const jxx = [
                     const dataAdress = (parseInt(control.line[1], 16));
 
                     setVisual("offset", "ip", dataAdress)
+				
                     console.log(cpu)
 
                     cpuXram(
@@ -126,13 +142,14 @@ const jxx = [
                     );
                 }
             case "NE":
-                if(cpu.flag.zero == 0){
+                if(cpu.flag.zero == false){
                     const cs = cpu.segmentRegister.cs;
                     const codeSegment = cpu.segmentTable[cs];
                     const control = cpu.controlUnity
                     const dataAdress = (parseInt(control.line[1], 16));
             
                     setVisual("offset", "ip", dataAdress)
+					
                     console.log(cpu)
             
                     cpuXram(
@@ -150,6 +167,7 @@ const jxx = [
                     const dataAdress = (parseInt(control.line[1], 16));
 
                     setVisual("offset", "ip", dataAdress)
+					
                     console.log(cpu)
 
                     cpuXram(
@@ -168,6 +186,7 @@ const jxx = [
 					const dataAdress = (parseInt(control.line[1], 16));
 
 					setVisual("offset", "ip", dataAdress)
+					
 					console.log(cpu)
 
 					cpuXram(
@@ -181,6 +200,8 @@ const jxx = [
                 break;
         
         }
+		
+		console.log('step 5')
         return true;
     }
 
