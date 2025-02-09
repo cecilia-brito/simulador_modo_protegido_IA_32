@@ -228,7 +228,6 @@ async function start(){
         if(!codeInput.textContent)throw new Error("código vazio.");
         cpuXram("","",0);
         Object.keys(cpu.segmentRegister).forEach(val=>{
-            alert(val)
             if(!Object.keys(cpu.segmentTable).includes(cpu.segmentRegister[val].toString())){
                 throw new Error(val);
             };
@@ -236,7 +235,6 @@ async function start(){
         codeInput.contentEditable = false;
         setTableButton.disabled = true;
         const lineList = {}
-        alert(1)
         const base = cpu.segmentTable[cpu.segmentRegister.cs].base;
         codeInput.textContent.split("\n").reduce((prev,singleLine,i)=>{
             const validLine = checkLine(singleLine);
@@ -260,7 +258,6 @@ async function start(){
             console.log(singleLine);
             throw new Error(i+1);
         }, base);
-        alert(2)
         await changeRamEdit(false);
         //lineList será o objeto com todas as linhas selecionadas por sua posição na memória.
         cpu.controlUnity.code = lineList;
