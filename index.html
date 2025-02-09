@@ -8,29 +8,34 @@
   </head>
   <body>
     <div class="container">
-      <pre class="container__wrapper">
-        <code id="code" class="container__wrapper__code" contenteditable="true" spellcheck="false"></code>
-      </pre>
+      <div class="container__wrapper"> 
+        <pre class="container__wrapper__pre">
+          <code id="code" class="container__wrapper__pre__code" contenteditable="true" spellcheck="false"></code>
+        </pre>
+        <div>
+          <button id="clock">start</button>
+          <button id="click">end</button>
+          <button id="auto">auto</button>
+        </div>
+      </div>
       <div class="container__registers">
         <h2>Gerais</h2>
-        <div class="box">eax <span id="eax"></span></div>
-        <div class="box">ebx <span id="ebx"></span></div>
-        <div class="box">ecx <span id="ecx"></span></div>
-        <div class="box">edx <span id="edx"></span></div>
-        
-        <br/>
+        <div class="box">eax <input class="no-border-input no-segment-selector input-selector" id="eax"/></div>
+        <div class="box">ebx <input class="no-border-input no-segment-selector input-selector" id="ebx"/></div>
+        <div class="box">ecx <input class="no-border-input no-segment-selector input-selector" id="ecx"/></div>
+        <div class="box">edx <input class="no-border-input no-segment-selector input-selector" id="edx"/></div>
+
         <h2>Seletor de segmento</h2>
-        <div class="box">cs <span id="cs"></span></div>
-        <div class="box">ds <span id="ds"></span></div>
-        <div class="box">ss <span id="ss"></span></div>
+        <div class="box">cs <input class="no-border-input segment-selector input-selector" id="cs" pattern="[0-9a-fA-F]{4}"/></div>
+        <div class="box">ds <input class="no-border-input segment-selector input-selector" id="ds" pattern="[0-9a-fA-F]{4}"/></div>
+        <div class="box">ss <input class="no-border-input segment-selector input-selector" id="ss" pattern="[0-9a-fA-F]{4}"/></div>
         
-        <br/>
         <h2>Offset</h2>
-        <div class="box">ip <span id="ip"></span></div>
-        <div class="box">sp <span id="sp"></span></div>
-        <div class="box">bp <span id="bp"></span></div>
-        <div class="box">si <span id="si"></span></div>
-        <div class="box">di <span id="di"></span></div>
+        <div class="box">eip <input class="no-border-input no-segment-selector input-selector" id="ip" pattern="[0-9a-fA-F]{8}"/></div>
+        <div class="box">esp <input class="no-border-input no-segment-selector input-selector" id="sp" pattern="[0-9a-fA-F]{8}"></input></div>
+        <div class="box">ebp <input class="no-border-input no-segment-selector input-selector" id="bp" pattern="[0-9a-fA-F]{8}"></input></div>
+        <div class="box">esi <input class="no-border-input no-segment-selector input-selector" id="si" pattern="[0-9a-fA-F]{8}" disabled></input></div>
+        <div class="box">edi <input class="no-border-input no-segment-selector input-selector" id="di" pattern="[0-9a-fA-F]{8}" disabled></input></div>
       </div>
       <div class="container__bus">
         <p class="container__bus__info" id="bus-text"></p>
@@ -45,9 +50,7 @@
         </ul>
       </div>
     </div>
-    <button id="clock">start</button>
-    <button id="click">end</button>
-    <form id="segment-form">
+    <form class="segment-form" id="segment-form">
       <table id="segment-table">
         <tr>
         <th>Seletor</th>
@@ -56,25 +59,26 @@
         <th>acesso</th>
         </tr>
         <tr>
-          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{4}" value="0001"></td>
-          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00000000"></td>
-          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00000FFF"></td>
-          <td><input type="text" name="" id="" required pattern="[0-3]" value="3"></td>
+          <td><input type="text" required pattern="[0-9a-fA-F]{4}" value="0001"></td>
+          <td><input type="text" required pattern="[0-9a-fA-F]{8}" value="00000000"></td>
+          <td><input type="text" required pattern="[0-9a-fA-F]{8}" value="000000FF"></td>
+          <td><input type="text" required pattern="[0-3]" value="3"></td>
         </tr>
         <tr>
-          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{4}" value="0002"></td>
-          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00001000"></td>
-          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00001FFF"></td>
-          <td><input type="text" name="" id="" required pattern="[0-3]" value="3"></td>
+          <td><input type="text" required pattern="[0-9a-fA-F]{4}" value="0002"></td>
+          <td><input type="text" required pattern="[0-9a-fA-F]{8}" value="00000100"></td>
+          <td><input type="text" required pattern="[0-9a-fA-F]{8}" value="000001FF"></td>
+          <td><input type="text" required pattern="[0-3]" value="3"></td>
         </tr>
         <tr>
-          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{4}" value="0003"></td>
-          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00002000"></td>
-          <td><input type="text" name="" id="" required pattern="[0-9a-fA-F]{8}" value="00002FFF"></td>
-          <td><input type="text" name="" id="" required pattern="[0-3]" value="3"></td>
+          <td><input type="text" required pattern="[0-9a-fA-F]{4}" value="0003"></td>
+          <td><input type="text" required pattern="[0-9a-fA-F]{8}" value="00000200"></td>
+          <td><input type="text" required pattern="[0-9a-fA-F]{8}" value="000002FF"></td>
+          <td><input type="text" required pattern="[0-3]" value="3"></td>
         </tr>
       </table>
       <button id="set-table-button">set</button>
+      <input type="button" id="add-table-button" value="add"/>
     </form>
   </body>
   <script src="./main.js" type="module"></script>
