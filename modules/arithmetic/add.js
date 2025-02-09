@@ -16,8 +16,8 @@ const add = [
         cpuXram(
             //desc
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base.toString(16)} + ${cpu.offsetRegister.ip.toString(16)}<br/>
-            endereço linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(16)}`,
+            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -62,7 +62,7 @@ const add = [
         cpuXram(
             //desc
             `Bus Dados<br>`
-           +`${data.toString(16)}`,
+           +`${showHexa(data)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -82,8 +82,8 @@ const add = [
         const dataSegment = cpu.segmentTable[ds];
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.si.toString(16)}<br/>
-            endereço linear = ${(dataSegment.base + cpu.offsetRegister.si).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.si)}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.si)}`,
             "request",
             dataSegment.base+cpu.offsetRegister.si
         );
@@ -101,7 +101,7 @@ const add = [
         console.log(linearAddress)
         cpuXram(
             `bus dados<br/>
-            dados: ${data.toString(16)}`,
+            dados: ${showHexa(data)}`,
             "get",
             codeSegment.base+cpu.offsetRegister.si
         );
@@ -119,7 +119,7 @@ const add = [
         cpuXram(
             //desc
             `Bus Dados<br>`
-           +`${data.toString(16)}`,
+           +`${showHexa(data)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -148,7 +148,7 @@ const add = [
         console.log(linearAddress)
         cpuXram(
             `bus dados<br/>
-            dados: ${data.toString(16)}`,
+            dados: ${showHexa(data.toString)}`,
             "get",
             codeSegment.base+cpu.offsetRegister.si
         );
@@ -157,34 +157,39 @@ const add = [
         return false;
     },//step 10
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        cpu.geralRegister.eax = cpu.geralRegister.eax + cpu.geralRegister.ebx
         let n1 = cpu.geralRegister.eax.toString(2);
         let n2 = cpu.geralRegister.ebx.toString(2);
-        cpu.flag.carry = n1[0] == n2[0]; 
+        let sum = cpu.geralRegister.eax + cpu.geralRegister.ebx;
+        cpu.flag.carry = n1[0] == n2[0] && n1[0] == 1; 
         setVisual("geral", "eax", cpu.geralRegister.eax);
         const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
         const linearAddress = getLinearAddress("di");
         cpuXram(
             `bus dados<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${linearAddress.toString(16)}<br/>
-            dados: ${cpu.geralRegister.eax.toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(linearAddress)}<br/>
+            dados: ${showHexa(sum)}`,
             "request",
             linearAddress
         )
         console.log("step 10");
+        cpu.geralRegister.eax = sum;
         setVisual("ram", linearAddress, cpu.geralRegister.eax);
-        cpu.flag.zero = cpu.geralRegister.eax === 0;
-        let test_parity = cpu.geralRegister.eax.toString(2);
+        let twoComp = (cpu.geralRegister.eax>>>0).toString(2);
+        cpu.flag.zero = twoComp == 0;
+        let test_parity = twoComp;
         test_parity = test_parity.slice(test_parity.length - 8, test_parity.length - 1);
         cpu.flag.parity = test_parity == "11111111";
-        test_parity = cpu.geralRegister.eax.toString(2);
-        cpu.flag.sign = test_parity[0];
+        cpu.flag.overflow = (n1[0] == n2[0] && n2[0] == '-' && sum[0] != '-') || (n1[0] != '-' && n2[0] != '-' && sum[0] == '-')
+        cpu.flag.sign = twoComp[0];
         return true;
     }
 ];
 export default add;
 
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}
   
 // Status Flags
 //  The status flags (bits 0, 2, 4, 6, 7, and 11) of the EFLAGS register indicate the results of arithmetic instructions, 
@@ -264,4 +269,4 @@ export default add;
 // and IA-32 Architectures Software Developer’s Manual, Volume 3A.
 
 // Flags Affected
-// The OF, AF, and flags are set according to the result.
+// The OF, and flags are set according to the result.

@@ -63,7 +63,7 @@ const jmp = [
 
             codeSegment.base+cpu.offsetRegister.ip
         );
-        return false
+        return true
     },
     
 ];
