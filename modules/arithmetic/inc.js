@@ -142,6 +142,9 @@ const inc = [
 
             codeSegment.base+cpu.offsetRegister.si
         );
+        const flag = cpu.flag
+        flag.zero = data === 0
+        flag.sign = data < 0
         return true
     },
 ];

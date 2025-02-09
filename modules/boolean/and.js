@@ -193,7 +193,11 @@ const and = [
             
             codeSegment.base+cpu.offsetRegister.di
         );
-            
+            const flag = cpu.flag
+            flag.zero = data === 0
+            flag.sign = data < 0
+            flag.overflow = false
+
             return true
         }
 ];
