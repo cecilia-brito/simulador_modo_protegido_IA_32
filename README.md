@@ -14,7 +14,7 @@ Este projeto foi desenvolvido como um trabalho para a matéria MATA48 - Arquitet
 
 ## Manual do usuário
 
-Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://cecilia-brito.github.io/simulador_modo_protegido_IA_32/). 
+Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://github.com/cecilia-brito/simulador_modo_protegido_IA_32).
 
 ### Interface
 
@@ -44,7 +44,7 @@ antes de baixar o projeto você vai precisar ter instalado na sua máquina as se
   - [npm](https://www.npmjs.com)
   - [yarn](https://yarnpkg.com)
 
-### Em seguida:
+### Em seguida
 
 ```bash
 # Clone o repositório
