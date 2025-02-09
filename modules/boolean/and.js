@@ -183,8 +183,8 @@ const and = [
         const eax =  cpu.geralRegister.eax
 
         const linearAddress = getLinearAddress("di");
-        setVisual("ram", linearAddress, eax)
         const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
+        setVisual("ram", linearAddress, eax)
         
         cpuXram(
             `bus dados<br/>
