@@ -65,7 +65,7 @@ const mov = [
             );
             setVisual("offset", "ip", cpu.offsetRegister.ip + 4)
            
-            if(!myRegister.includes(control.line[2].toLowerCase())){
+            if(!myRegister.includes(control.line[1].toLowerCase())){
                 setVisual("offset", "di", dataAdress)
             }
 
@@ -145,6 +145,7 @@ const mov = [
         },
             //step 9
             (setVisual, cpuXram, getLinearAddress, cpu)=>{
+                const control = cpu.controlUnity
                 if(!myRegister.includes(control.line[1].toLowerCase())){
                         const ds = cpu.segmentRegister.ds;
                         const codeSegment = cpu.segmentTable[ds];
@@ -158,8 +159,10 @@ const mov = [
                             "request",
                             codeSegment.base+cpu.offsetRegister.di
                         );
-                        if(myRegister.includes(control.line[2].toLowerCase())){
-                            setVisual("ram", linearAddress, cpu.geralRegister[cpu.controlUnity.line[2].toLowerCase()])
+                        if(myRegister.includes(control.line[2].toLowerCase()) || control.line[2][0] === "#"){
+                            const dado = myRegister.includes(control.line[2].toLowerCase())?
+                            cpu.geralRegister[cpu.controlUnity.line[2].toLowerCase()]:parseInt(control.line[2].slice(1), 16)
+                            setVisual("ram", linearAddress, dado)
                         }
                         else{
                             const ebx = cpu.geralRegister.ebx
