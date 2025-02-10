@@ -22,28 +22,85 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 ### Exemplos de instruções
 
+  Todas instruções são implementadas utilizando um array de arrow functions que é percorrido pela função clock, dessa forma cada elemento/função do array de uma instrução é um passo. Por exemplo, a instrução OR tem 12 passos, ou seja, 12 funções dentro do array que será iterado pela função clock. No caso da instrução OR o primeiro passo é responsável por validar a entrada verificando se a quantidade de operandos está correta; o segundo é responsável por calcular o endereço linear do opcode ; o terceiro é responsável por acessar o endereço linear e mostrar o dado que está nele ao fim da instrução IP é incrementado em 4 unidades; o quarto é responsável por calcular o endereço linear do primeiro operando; o quinto é responsável por acessar o endereço linear do passo anterior e encontrar o endereço para o dado do operando, DI e SI são setados com o endereço acessado; o sexto passo é responsável por calcular o endereço linear do operando no segmento de dados; no sétimo passo o endereço linear calculado é utilizado para acessar o dado do primeiro operando e salvar o valor do registrador EAX; o quarto, o quinto, o sexto e o sétimo passos se repetem para o segundo operando seu valor é guardado em EBX; o décimo segundo é responsável por fazer a operação or entre os valores de EAX e EBX salvando o resultado em EAX e depois alterando o valor na RAM, por fim ele setará os flags pertinentes de acordo com o resultado. 
+
 #### Booleana
+
+- *AND*
+
+  A instrução AND realiza a operação lógica bit a bit: DEST = DEST & SRC. Ela possui 12 passos e utiliza os registradores CS, DS, EDI, ESI, EPI, EAX e EBX, além de modificar o registrador EFLAG.
+  
+  ```assembly
+  AND OP1, OP2;
+  ```
 
 - *OR*
 
-  A instrução "OR" faz a seguinte operação DEST = DEST OR SRC, sendo que a instrução OR assim como as outras é implementada utilizando um array de arrow functions que é percorrido pela função clock, dessa forma cada elemento/função do array de uma instrução é um passo. 
-  A instrução OR é composta por 12 passos: o primeiro é responsável por validar a entrada verificando se a quantidade de operandos está correta; o segundo é responsável por calcular o endereço linear do opcode; o terceiro é responsável por acessar o endereço linear e mostrar o dado que está nele ao fim da instrução IP é incrementado em 4 unidades; o quarto é responsável por calcular o endereço linear do primeiro operando; o quinto é responsável por acessar o endereço linear do passo anterior e encontrar o endereço para o dado do operando, DI e SI são setados com o endereço acessado; o sexto passo é responsável por calcular o endereço linear do operando no segmento de dados; no sétimo passo o endereço linear calculado é utilizado para acessar o dado do primeiro operando e salvar o valor do registrador EAX; o quarto, o quinto, o sexto e o sétimo passos se repetem para o segundo operando seu valor é guardado em EBX; o décimo segundo é responsável por fazer a operação or entre os valores de EAX e EBX salvando o resultado em EAX e depois alterando o valor na RAM, por fim ele setará os flags pertinentes de acordo com o resultado.
+  A instrução "OR" faz a seguinte operação DEST = DEST OR SRC, possui 12 passos e utiliza os registradores EAX, EBX, DS, EPI, EDI, ESI e CS. 
 
+```assembly
+  OR OP1, OP2;
+  ```
 #### Aritmética
 
 - *ADD*
 
-  A instrução ADD faz a seguinte operação: DEST = DEST + SRC e possui 12 passos. Ela utiliza os registradores CS, DS, DI, SI, IP, EAX e EBX e também o registrador EFLAG.
+  A instrução ADD faz a seguinte operação: **DEST = DEST + SRC** e possui 12 passos. Ela utiliza os registradores CS, DS, EDI, ESI, EPI, EAX e EBX e também o registrador EFLAG.
 
+  ```assembly
+  ADD OP1, OP2;
+  ```
+
+  A instrução ADD faz a seguinte operação: DEST = DEST + SRC e possui 12 passos. Ela utiliza os registradores CS, DS, EDI, ESI, EPI, EAX e EBX e também o registrador EFLAG.
+
+- *INC*
+
+  A instrução INC incrementa o valor do operando em 1: DEST = DEST + 1. Ela possui 8 passos e utiliza os registradores CS, DS, EDI, ESI, EIP e EAX, além de modificar o registrador EFLAG.
+
+  ``` assembly
+  INC OP1;
+  ```
 - *NEG*
 
-  A instrução NEG faz a seguinte operação: **DEST = -DEST** e possui 8 passos. Ela utiliza os registradores CS, DS, DI, SI, IP e EAX, além de alterar o registrador EFLAG. O formato da instrução deve ser:
+  A instrução NEG faz a seguinte operação: **DEST = -DEST** e possui 8 passos. Ela utiliza os registradores CS, DS, EDI, ESI, EIP e EAX, além de alterar o registrador EFLAG. O formato da instrução deve ser:
 
   ```assembly
   NEG OP1;
   ```
 
 #### Comparação e teste
+
+- *CALL*
+
+  A instrução CALL realiza uma chamada para um procedimento e seta ip para o endereço informado na isntrução. Além disso, o endereço da instrução seguinte é armazanado no topo da pilha. O formato da instrução deve ser:
+
+  ```assembly
+  CALL OP1;
+  ```
+
+- *JCC*
+
+  A instrução JCC - **JCC OFFSET** - analisa as flags e dependendo dos valores das flags e da condição testada salta para o endereço END mudando o valor do registrador IP. Utiliza os registradores CS e IP e possui 6 passos.
+
+  ```assembly
+  JCC OFFSET;
+  ```
+
+  Além disso existem 6 condições que podem ser testadas: 
+  - JG - >
+  - JGE - >=
+  - JE - =
+  - JNE -!=
+  - JL - <
+  - JLE - <=
+
+- *JMP*
+
+  A instrução JMP altera o fluxo de execução, definindo o registrador IP para um novo endereço sem verificar nenhuma condição. Ela possui 4 passos e utiliza os registradores CS e IP.
+
+  ```assembly
+  JMP OP1;
+  ```
 
 - *CALL*
 
@@ -77,6 +134,14 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 #### Movimento
 
+- *MOV*
+
+  A instrução MOV copia o valor da origem para o destino sem modificar flags: DEST = SRC. Ela possui 10 passos e utiliza os registradores CS, DS, EDI, ESI, EPI, EAX e EBX.
+
+  ```assembly
+  MOV OP1, OP2;
+  ```
+
 - *HLT*
 
   Realiza a parada da execução. A instrução deve seguir o seguinte formato:
@@ -87,7 +152,11 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 - *PUSH*
 
-  A instrução PUSH - PUSH END - decrementa 4 unidades do valor guardado no registrador ESP e coloca o valor do endereço END no topo da pilha.
+  A instrução PUSH - PUSH END - decrementa 4 unidades do valor guardado no registrador ESP e coloca o valor do endereço END no topo da pilha. Utiliza os registradores ESP, EEPI, CS, DS, EESI, EEEDI,
+
+  ```assembly
+  PUSH OP;
+  ```
 
 ## Para desenvolvedores
 
@@ -139,15 +208,15 @@ As propriedades desse objeto são as seguintes:
 
 - *geralRegister*:
 
-  Contém os registradores eax, ebx, ecx e edx, números de até 4 bytes. Eles servirão para armazenamento de dados entre as intruções do programa. Inicialmente se encontram vazios mas são inicializados ao final do arquivo. Para bom funcionamento do código, não se deve alterar diretamente os valores desses registradores pois seus valores estão ligados diretamente com dados apresentado na interface pelo usuário. Deve ser atualizado apenas através da função setVisualRegister que sera explicada mais a frente.
+  Contém os registradores EAX, EBX, ECX e EDX, números de até 4 bytes. Eles servirão para armazenamento de dados entre as intruções do programa. Inicialmente se encontram vazios mas são inicializados ao final do arquivo. Para bom funcionamento do código, não se deve alterar diretamente os valores desses registradores pois seus valores estão ligados diretamente com dados apresentado na interface pelo usuário. Deve ser atualizado apenas através da função setVisualRegister que sera explicada mais a frente.
 
 - *segmentRegister*:
 
-  Contém os registradores cs, ss e ds, números de até 2 bytes. Estes representarão as chaves de entrada na tabela de segmentos, outra propriedade da cpu. Eles devem ser alterados apenas pelo usuário já que não existem instruções que alterem diretamente o registrador de segmentos. Apesar disso, a função setVisualRegister consegue modificá-los para sua inicialização ao fim do arquivo.
+  Contém os registradores CS, SS e DS, números de até 2 bytes. Estes representarão as chaves de entrada na tabela de segmentos, outra propriedade da cpu. Eles devem ser alterados apenas pelo usuário já que não existem instruções que alterem diretamente o registrador de segmentos. Apesar disso, a função setVisualRegister consegue modificá-los para sua inicialização ao fim do arquivo.
 
 - *offsetRegister*:
 
-  Contém os registradores ip, sp, bp, di e si, números de até 4 bytes. Eles servirão como "offset" ou "deslocamento" a partir da base de um certo segmento. Estes segmentos são obtidos através da tabela de segmentos acessada pelo seu respetivo registrador de segmento. Após somado o offset com a base de segmento, será encontrado o indice na ram que está o dado em questão. Como os dois anteriores, os registradores deste tipo podem ser modificado apenas através da função setVisualRegister e inicializados ao fim do arquivo.
+  Contém os registradores EPI, ESP, EBP, EDI e ESI, números de até 4 bytes. Eles servirão como "offset" ou "deslocamento" a partir da base de um certo segmento. Estes segmentos são obtidos através da tabela de segmentos acessada pelo seu respetivo registrador de segmento. Após somado o offset com a base de segmento, será encontrado o indice na ram que está o dado em questão. Como os dois anteriores, os registradores deste tipo podem ser modificado apenas através da função setVisualRegister e inicializados ao fim do arquivo.
 
 - *ram*:
 
