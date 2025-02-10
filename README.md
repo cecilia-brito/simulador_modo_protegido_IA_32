@@ -24,8 +24,6 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 #### Booleana
 
-<<<<<<< HEAD
-=======
 - *AND*
 
   A instrução AND realiza a operação lógica bit a bit: DEST = DEST & SRC. Ela possui 12 passos e utiliza os registradores CS, DS, DI, SI, IP, EAX e EBX, além de modificar o registrador EFLAG.
@@ -34,30 +32,24 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
   AND OP1, OP2;
   ```
 
->>>>>>> cf3b383886d13aff519ef7b705f6ecc054779cd7
 - *OR*
 
   A instrução "OR" faz a seguinte operação DEST = DEST OR SRC, sendo que a instrução OR assim como as outras é implementada utilizando um array de arrow functions que é percorrido pela função clock, dessa forma cada elemento/função do array de uma instrução é um passo. 
   A instrução OR é composta por 12 passos: o primeiro é responsável por validar a entrada verificando se a quantidade de operandos está correta; o segundo é responsável por calcular o endereço linear do opcode; o terceiro é responsável por acessar o endereço linear e mostrar o dado que está nele ao fim da instrução IP é incrementado em 4 unidades; o quarto é responsável por calcular o endereço linear do primeiro operando; o quinto é responsável por acessar o endereço linear do passo anterior e encontrar o endereço para o dado do operando, DI e SI são setados com o endereço acessado; o sexto passo é responsável por calcular o endereço linear do operando no segmento de dados; no sétimo passo o endereço linear calculado é utilizado para acessar o dado do primeiro operando e salvar o valor do registrador EAX; o quarto, o quinto, o sexto e o sétimo passos se repetem para o segundo operando seu valor é guardado em EBX; o décimo segundo é responsável por fazer a operação or entre os valores de EAX e EBX salvando o resultado em EAX e depois alterando o valor na RAM, por fim ele setará os flags pertinentes de acordo com o resultado.
 
-<<<<<<< HEAD
 ```assembly
   OR OP1, OP2;
   ```
-=======
->>>>>>> cf3b383886d13aff519ef7b705f6ecc054779cd7
 #### Aritmética
 
 - *ADD*
 
-<<<<<<< HEAD
   A instrução ADD faz a seguinte operação: **DEST = DEST + SRC** e possui 12 passos. Ela utiliza os registradores CS, DS, DI, SI, IP, EAX e EBX e também o registrador EFLAG.
 
   ```assembly
   ADD OP1, OP2;
   ```
 
-=======
   A instrução ADD faz a seguinte operação: DEST = DEST + SRC e possui 12 passos. Ela utiliza os registradores CS, DS, DI, SI, IP, EAX e EBX e também o registrador EFLAG.
 
 - *INC*
@@ -67,7 +59,6 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
   ``` assembly
   INC OP1;
   ```
->>>>>>> cf3b383886d13aff519ef7b705f6ecc054779cd7
 - *NEG*
 
   A instrução NEG faz a seguinte operação: **DEST = -DEST** e possui 8 passos. Ela utiliza os registradores CS, DS, DI, SI, IP e EAX, além de alterar o registrador EFLAG. O formato da instrução deve ser:
@@ -78,7 +69,6 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 #### Comparação e teste
 
-<<<<<<< HEAD
 - *CALL*
 
   A instrução CALL realiza uma chamada para um procedimento e seta ip para o endereço informado na isntrução. Além disso, o endereço da instrução seguinte é armazanado no topo da pilha. O formato da instrução deve ser:
@@ -103,7 +93,6 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
   - JL - <
   - JLE - <=
 
-=======
 - *JMP*
 
   A instrução JMP altera o fluxo de execução, definindo o registrador IP para um novo endereço sem verificar nenhuma condição. Ela possui 4 passos e utiliza os registradores CS e IP.
@@ -123,7 +112,6 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 - *JCC*
 
   A instrução JCC - JCC END - analisa as flags e dependendo dos valores das flags e da condição testada salta para o endereço END. Utiliza os registradores CS e IP.
->>>>>>> cf3b383886d13aff519ef7b705f6ecc054779cd7
 
 - *LOOP*
 
@@ -145,8 +133,6 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 #### Movimento
 
-<<<<<<< HEAD
-=======
 - *MOV*
 
   A instrução MOV copia o valor da origem para o destino sem modificar flags: DEST = SRC. Ela possui 10 passos e utiliza os registradores CS, DS, DI, SI, IP, EAX e EBX.
@@ -155,7 +141,6 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
   MOV OP1, OP2;
   ```
 
->>>>>>> cf3b383886d13aff519ef7b705f6ecc054779cd7
 - *HLT*
 
   Realiza a parada da execução. A instrução deve seguir o seguinte formato:
