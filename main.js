@@ -220,7 +220,7 @@ function getLinearAddress(offset){
         break;
     }
     const sum = segment.base+offsetValue;
-    gpf = sum>segment.limit;
+    gpf = sum+3>segment.limit;
     if(gpf){
         throw new Error(message+ `. Programa tentou acessar valor em ${sum.toString(16).padStart(8,"0")}, porém o limite é ${segment.limit.toString(16).padStart(8,"0")}`);
     };
