@@ -33,15 +33,19 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 - *ADD*
 
-  A instrução ADD faz a seguinte operação: DEST = DEST + SRC e possui 12 passos. 
+  A instrução ADD faz a seguinte operação: DEST = DEST + SRC e possui 12 passos. Ela utiliza os registradores CS, DS, DI, SI, IP, EAX e EBX e também o registrador EFLAG.
 
 #### Comparação e teste
 
-###### JCC
+- *JCC*
+
+  A instrução JCC - JCC END - analisa as flags e dependendo dos valores das flags e da condição testada salta para o endereço END. Utiliza os registradores CS e IP.
 
 #### Movimento
 
-###### PUSH
+- *PUSH*
+
+  A instrução PUSH - PUSH END - decrementa 4 unidades do valor guardado no registrador ESP e coloca o valor do endereço END no topo da pilha.
 
 ## Para desenvolvedores
 
