@@ -105,6 +105,14 @@ const mul = [
       linearAddress
     );
     setVisual("ram", linearAddress, cpu.geralRegister.eax);
+    if (cpu.geralRegister.edx !== 0) {
+      cpu.flag.overflow = true;
+      cpu.flag.carry = true;
+    }
+    else {
+      cpu.flag.overflow = false;
+      cpu.flag.carry = false;
+    }
     return true;
   },
 ];
