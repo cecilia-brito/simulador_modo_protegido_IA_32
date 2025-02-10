@@ -45,7 +45,6 @@ const instructionList = {
     pop,
     push,
     xchg,
-    algo:[(line)=>line],
 };
 
 // Criação do objeto 
@@ -75,7 +74,7 @@ const cpu = {
     controlUnity:{
         instruction: "",
         step: 0,
-        code: [],
+        code: {},
         line: [],
     },
     segmentTable:{
@@ -95,7 +94,7 @@ const cpu = {
             access:0b11,
         },
     },
-    ram: Array(0x1000).fill(0),
+    ram: Array(ramValues.size).fill(0),
 };
 
 // Guardando a referência de elementos importantes do html
@@ -117,6 +116,12 @@ const segmentSelectors = document.querySelectorAll("input.input-selector"); //Li
 let autoExecution;
 
 const highlighted = [];
+
+const ramValues = {
+    start: 0,
+    visible: 30,
+    size: 0x1000,
+}
 
 // Função responsável por alterar os valores dos registradores cujo valor é apresentado ao usuário.
 function setVisualRegister(type, register, value, amount="word"){
