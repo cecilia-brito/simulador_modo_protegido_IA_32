@@ -187,6 +187,8 @@ const add = [
         console.log(n1)
         console.log(n2)
         console.log(cpu.flag)
+        return false;
+    },(setVisual, cpuXram, getLinearAddress, cpu)=>{
         return true;
     }
 ];

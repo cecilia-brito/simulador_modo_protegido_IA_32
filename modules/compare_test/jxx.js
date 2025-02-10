@@ -69,6 +69,51 @@ const jxx = [
         setVisual("offset", "ip", cpu.offsetRegister.ip + 4);
         console.log("step 2")
         return false;
+    },(setVisual, cpuXram, getLinearAddress, cpu)=>{
+        let condition = cpu.controlUnity.line[2]
+		console.log(cpu.controlUnity)
+        switch (condition) {
+            case "G":
+                if(cpu.flag.zero == false && cpu.flag.sign == false){
+                    return false;
+                }else{
+                    return true;
+                }
+            case "GE":
+                if(cpu.flag.sign == cpu.flag.overflow){
+                    return false;
+                }else{
+                    return true;
+                }
+            case "E":
+                if(cpu.flag.zero == true){
+                    return false;
+                }else{
+                    return true;
+                }
+            case "NE":
+                if(cpu.flag.zero == false){
+                    return false;
+                }else{
+                    return true;
+                }
+            case "LE":
+                if(cpu.flag.zero == true || cpu.flag.sign != cpu.flag.overflow){
+                   return false;
+                }else{
+                    return true;
+                }
+
+            case "L":
+                if(cpu.flag.overflow != cpu.flag.sign){
+					return false;
+				}else{
+                    return true;
+                }
+            default:
+                break;
+        
+        }
     },(setVisual, cpuXram, getLinearAddress, cpu) =>{
         jxx[1](setVisual, cpuXram, getLinearAddress, cpu);
 	},(setVisual, cpuXram, getLinearAddress, cpu) =>{
@@ -102,118 +147,22 @@ const jxx = [
         return false
 	},
      (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        let condition = cpu.controlUnity.line[2]
-		console.log(cpu.controlUnity)
-        switch (condition) {
-            case "G":
-                if(cpu.flag.zero == false && cpu.flag.sign == false){
-                    const cs = cpu.segmentRegister.cs;
-                    const codeSegment = cpu.segmentTable[cs];
-                    const control = cpu.controlUnity
-                    const dataAdress = (parseInt(control.line[1], 16));
-                    setVisual("offset", "ip", dataAdress)
-					
-                    console.log(cpu)
-
-                    cpuXram(
-                        
-                        `Pulando para o endereço: ${showHexa(control.line[1])}`,
-                        codeSegment.base+cpu.offsetRegister.ip
-                    );
-                }
-            case "GE":
-                if(cpu.flag.sign == cpu.flag.overflow){
-                    const cs = cpu.segmentRegister.cs;
-                    const codeSegment = cpu.segmentTable[cs];
-                    const control = cpu.controlUnity
-                    const dataAdress = (parseInt(control.line[1], 16));
-
-                    setVisual("offset", "ip", dataAdress)
-					
-                    cpuXram(
-                        
-                        `Pulando para o endereço: ${showHexa(control.line[1])}`,
-
-                        codeSegment.base+cpu.offsetRegister.ip
-                    );
-                }
-            case "E":
-                if(cpu.flag.zero == true){
-                    const cs = cpu.segmentRegister.cs;
-                    const codeSegment = cpu.segmentTable[cs];
-                    const control = cpu.controlUnity
-                    const dataAdress = (parseInt(control.line[1], 16));
-
-                    setVisual("offset", "ip", dataAdress)
-				
-                    console.log(cpu)
-
-                    cpuXram(
-                        
-                        `Pulando para o endereço: ${showHexa(control.line[1])}`,
-
-                        codeSegment.base+cpu.offsetRegister.ip
-                    );
-                }
-            case "NE":
-                if(cpu.flag.zero == false){
-                    const cs = cpu.segmentRegister.cs;
-                    const codeSegment = cpu.segmentTable[cs];
-                    const control = cpu.controlUnity
-                    const dataAdress = (parseInt(control.line[1], 16));
-            
-                    setVisual("offset", "ip", dataAdress)
-					
-                    console.log(cpu)
-            
-                    cpuXram(
-                        
-                        `Pulando para o endereço: ${showHexa(control.line[1])}`,
-            
-                        codeSegment.base+cpu.offsetRegister.ip
-                    ); 
-                }
-            case "LE":
-                if(cpu.flag.zero == true || cpu.flag.sign != cpu.flag.overflow){
-                    const cs = cpu.segmentRegister.cs;
-                    const codeSegment = cpu.segmentTable[cs];
-                    const control = cpu.controlUnity
-                    const dataAdress = (parseInt(control.line[1], 16));
-
-                    setVisual("offset", "ip", dataAdress)
-					
-                    console.log(cpu)
-
-                    cpuXram(
-                        
-                        `Pulando para o endereço: ${showHexa(control.line[1])}`,
-
-                        codeSegment.base+cpu.offsetRegister.ip
-                    );
-                }
-
-            case "L":
-                if(cpu.flag.overflow != cpu.flag.sign){
-					const cs = cpu.segmentRegister.cs;
-					const codeSegment = cpu.segmentTable[cs];
-					const control = cpu.controlUnity
-					const dataAdress = (parseInt(control.line[1], 16));
-
-					setVisual("offset", "ip", dataAdress)
-					
-					console.log(cpu)
-
-					cpuXram(
-						
-						`Pulando para o endereço: ${showHexa(control.line[1])}`,
-
-						codeSegment.base+cpu.offsetRegister.ip
-					);
-				}
-            default:
-                break;
         
-        }
+        const cs = cpu.segmentRegister.cs;
+        const codeSegment = cpu.segmentTable[cs];
+        const control = cpu.controlUnity
+        const dataAdress = (parseInt(control.line[1], 16));
+        setVisual("offset", "ip", dataAdress)
+        
+        console.log(cpu)
+
+        cpuXram(
+            
+            `Pulando para o endereço: ${showHexa(control.line[1])}`,
+            codeSegment.base+cpu.offsetRegister.ip
+        );
+            
+        
 		
 		console.log('step 5')
         return true;
