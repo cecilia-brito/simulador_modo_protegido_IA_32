@@ -38,12 +38,14 @@ const ret = [
     },
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
         const address = getLinearAddress("sp");
+        cpu.offsetRegister.sp++;
+        getLinearAddress("sp");
         const ram = cpu.ram;
         const data =
-        + ram[address+4] * 0x1000000;
+        ram[address+4] * 0x1000000
         + ram[address+3] * 0x10000
         + ram[address+2] * 0x100
-        ram[address+1] 
+        + ram[address+1];
         cpuXram(
             `bus dados<br/>
             dados: ${data}`,
@@ -51,7 +53,7 @@ const ret = [
             address
         );
         setVisual("offset", "ip", data);
-        setVisual("offset", "sp", cpu.offsetRegister.sp+4);
+        setVisual("offset", "sp", cpu.offsetRegister.sp+3);
         return true;
     },
 ];

@@ -47,6 +47,12 @@ const instructionList = {
     xchg,
 };
 
+const ramValues = {
+    start: 0,
+    visible: 30,
+    size: 0x1000,
+}
+
 // Criação do objeto 
 const cpu = {
     geralRegister: {},
@@ -116,12 +122,6 @@ const segmentSelectors = document.querySelectorAll("input.input-selector"); //Li
 let autoExecution;
 
 const highlighted = [];
-
-const ramValues = {
-    start: 0,
-    visible: 30,
-    size: 0x1000,
-}
 
 // Função responsável por alterar os valores dos registradores cujo valor é apresentado ao usuário.
 function setVisualRegister(type, register, value, amount="word"){
@@ -220,7 +220,7 @@ function getLinearAddress(offset){
         break;
     }
     const sum = segment.base+offsetValue;
-    gpf = sum+3>segment.limit;
+    gpf = sum>segment.limit;
     if(gpf){
         throw new Error(message+ `. Programa tentou acessar valor em ${sum.toString(16).padStart(8,"0")}, porém o limite é ${segment.limit.toString(16).padStart(8,"0")}`);
     };

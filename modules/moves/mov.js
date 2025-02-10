@@ -189,7 +189,7 @@ const mov = [
                     cpuXram(
                         `bus dados<br/>
                         informações do endereço = ${data}`,
-                        `get`,
+                        `request`,
             
                         codeSegment.base+cpu.offsetRegister.di
                 );
