@@ -51,14 +51,15 @@ const call = [
     //step 6
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
         const address = getLinearAddress("sp")
+        setVisual("offset", "sp", cpu.offsetRegister.sp-4);
+        getLinearAddress("sp")
         cpuXram(
             `bus dados<br/>
             dados = ${showHexa(cpu.offsetRegister.ip)}`,
             "request",
-            address
+            address-3
         )
         setVisual("ram", address-3, cpu.offsetRegister.ip);
-        setVisual("offset", "sp", cpu.offsetRegister.sp-4);
         setVisual("offset", "ip", cpu.geralRegister.eax);
         return true;
     },
