@@ -29,11 +29,18 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
   A instrução "OR" faz a seguinte operação DEST = DEST OR SRC, sendo que a instrução OR assim como as outras é implementada utilizando um array de arrow functions que é percorrido pela função clock, dessa forma cada elemento/função do array de uma instrução é um passo. 
   A instrução OR é composta por 12 passos: o primeiro é responsável por validar a entrada verificando se a quantidade de operandos está correta; o segundo é responsável por calcular o endereço linear do opcode; o terceiro é responsável por acessar o endereço linear e mostrar o dado que está nele ao fim da instrução IP é incrementado em 4 unidades; o quarto é responsável por calcular o endereço linear do primeiro operando; o quinto é responsável por acessar o endereço linear do passo anterior e encontrar o endereço para o dado do operando, DI e SI são setados com o endereço acessado; o sexto passo é responsável por calcular o endereço linear do operando no segmento de dados; no sétimo passo o endereço linear calculado é utilizado para acessar o dado do primeiro operando e salvar o valor do registrador EAX; o quarto, o quinto, o sexto e o sétimo passos se repetem para o segundo operando seu valor é guardado em EBX; o décimo segundo é responsável por fazer a operação or entre os valores de EAX e EBX salvando o resultado em EAX e depois alterando o valor na RAM, por fim ele setará os flags pertinentes de acordo com o resultado.
 
+```assembly
+  OR OP1, OP2;
+  ```
 #### Aritmética
 
 - *ADD*
 
-  A instrução ADD faz a seguinte operação: DEST = DEST + SRC e possui 12 passos. Ela utiliza os registradores CS, DS, DI, SI, IP, EAX e EBX e também o registrador EFLAG.
+  A instrução ADD faz a seguinte operação: **DEST = DEST + SRC** e possui 12 passos. Ela utiliza os registradores CS, DS, DI, SI, IP, EAX e EBX e também o registrador EFLAG.
+
+  ```assembly
+  ADD OP1, OP2;
+  ```
 
 - *NEG*
 
@@ -55,7 +62,20 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 - *JCC*
 
-  A instrução JCC - JCC END - analisa as flags e dependendo dos valores das flags e da condição testada salta para o endereço END. Utiliza os registradores CS e IP.
+  A instrução JCC - **JCC OFFSET** - analisa as flags e dependendo dos valores das flags e da condição testada salta para o endereço END. Utiliza os registradores CS e IP.
+
+  ```assembly
+  JCC OFFSET;
+  ```
+
+  Além disso existem 6 condições que podem ser testadas: 
+  - JG - >
+  - JGE - >=
+  - JE - =
+  - JNE -!=
+  - JL - <
+  - JLE - <=
+
 
 - *LOOP*
 
@@ -88,6 +108,10 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 - *PUSH*
 
   A instrução PUSH - PUSH END - decrementa 4 unidades do valor guardado no registrador ESP e coloca o valor do endereço END no topo da pilha.
+
+  ```assembly
+  PUSH OP;
+  ```
 
 ## Para desenvolvedores
 
