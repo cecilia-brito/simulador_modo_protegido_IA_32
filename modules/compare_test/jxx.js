@@ -72,6 +72,23 @@ const jxx = [
     },(setVisual, cpuXram, getLinearAddress, cpu) =>{
         jxx[1](setVisual, cpuXram, getLinearAddress, cpu);
 	},(setVisual, cpuXram, getLinearAddress, cpu) =>{
+		const control = cpu.controlUnity;
+        const linearAddress = getLinearAddress("ip");
+        const data = control.line[1];
+        console.log(data)
+        cpuXram(
+            //desc
+            `Bus Dados<br>`
+           +`${showHexa(data)}`,
+            //request = "->"
+            //get = "<-"
+            //"" = [] (quadrado)
+            "get",
+            //posição na ram
+            linearAddress
+        );
+	},
+	(setVisual, cpuXram, getLinearAddress, cpu) =>{
 		const cs = cpu.segmentRegister.cs;
         const codeSegment = cpu.segmentTable[cs];
         const control = cpu.controlUnity
