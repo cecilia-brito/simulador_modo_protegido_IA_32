@@ -22,6 +22,8 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 ### Exemplos de instruções
 
+  Todas instruções são implementadas utilizando um array de arrow functions que é percorrido pela função clock, dessa forma cada elemento/função do array de uma instrução é um passo. Por exemplo, a instrução OR tem 12 passos, ou seja, 12 funções dentro do array que será iterado pela função clock. No caso da instrução OR o primeiro passo é responsável por validar a entrada verificando se a quantidade de operandos está correta; o segundo é responsável por calcular o endereço linear do opcode ; o terceiro é responsável por acessar o endereço linear e mostrar o dado que está nele ao fim da instrução IP é incrementado em 4 unidades; o quarto é responsável por calcular o endereço linear do primeiro operando; o quinto é responsável por acessar o endereço linear do passo anterior e encontrar o endereço para o dado do operando, DI e SI são setados com o endereço acessado; o sexto passo é responsável por calcular o endereço linear do operando no segmento de dados; no sétimo passo o endereço linear calculado é utilizado para acessar o dado do primeiro operando e salvar o valor do registrador EAX; o quarto, o quinto, o sexto e o sétimo passos se repetem para o segundo operando seu valor é guardado em EBX; o décimo segundo é responsável por fazer a operação or entre os valores de EAX e EBX salvando o resultado em EAX e depois alterando o valor na RAM, por fim ele setará os flags pertinentes de acordo com o resultado. 
+
 #### Booleana
 
 - *AND*
@@ -34,8 +36,7 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 - *OR*
 
-  A instrução "OR" faz a seguinte operação DEST = DEST OR SRC, sendo que a instrução OR assim como as outras é implementada utilizando um array de arrow functions que é percorrido pela função clock, dessa forma cada elemento/função do array de uma instrução é um passo. 
-  A instrução OR é composta por 12 passos: o primeiro é responsável por validar a entrada verificando se a quantidade de operandos está correta; o segundo é responsável por calcular o endereço linear do opcode; o terceiro é responsável por acessar o endereço linear e mostrar o dado que está nele ao fim da instrução IP é incrementado em 4 unidades; o quarto é responsável por calcular o endereço linear do primeiro operando; o quinto é responsável por acessar o endereço linear do passo anterior e encontrar o endereço para o dado do operando, DI e SI são setados com o endereço acessado; o sexto passo é responsável por calcular o endereço linear do operando no segmento de dados; no sétimo passo o endereço linear calculado é utilizado para acessar o dado do primeiro operando e salvar o valor do registrador EAX; o quarto, o quinto, o sexto e o sétimo passos se repetem para o segundo operando seu valor é guardado em EBX; o décimo segundo é responsável por fazer a operação or entre os valores de EAX e EBX salvando o resultado em EAX e depois alterando o valor na RAM, por fim ele setará os flags pertinentes de acordo com o resultado.
+  A instrução "OR" faz a seguinte operação DEST = DEST OR SRC, possui 12 passos e utiliza os registradores EAX, EBX, DS, IP, DI e SI 
 
 ```assembly
   OR OP1, OP2;
