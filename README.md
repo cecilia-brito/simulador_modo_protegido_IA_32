@@ -98,4 +98,24 @@ Objeto que possui diversas propriedades booleanas que se referem ao estado do pr
 
 - *segmentTable*:
 
-Objeto cujas chaves são números de até 2 bytes, em especial os valores dos registradores de segmento. Essa tabela é representada na interface abaixo do input de código.
+Objeto cujas chaves são números de até 2 bytes, em especial os valores dos registradores de segmento. Essa tabela é representada na interface abaixo do input de código. Onde podem ser adicionados novos seletores e atualizados aqueles já existentes.
+
+Cada elemento é um objeto com as propriedades base, limit e access. Está consiste de um número de 0 a 3, enquanto aquelas serão números de 0 até o limite da ram. Com isso é formado um segmento. Os segmentos não podem possuir intersecções.
+
+- *controlUnity*:
+
+Objeto que armazená todos os dados relevantes para execução do código e controle de fluxo. Possui 4 propriedades que são extensivamente usadas pelas funções start e clock que serão explicadas a frente.
+
+A primeira propriedade da unidade de controle é "instruction", cujo valor é o nome da instrução sendo executada atualmente pelo programa. A segunda propriedade é "step", um número referente ao passo interno da instrução. A terceira propriedade é "line", uma array de string, com tamanho variando de 1 à 3, seguindo padrão: [operação, operando, operando]. A quarta e ultima propriedade é "code", um objeto cujas chaves são o endereço físico na memória de uma dada linha de código seguindo o formato da propriedade line.
+
+#### As funções de intermediação
+
+Essa funções são responsáveis por fazer intermédio entre as ações lógicas do código e a interface.
+
+- *setVisualRegister*:
+
+Função responsável por modificar valores da cpu que possuem representação visual na interface. A função recebem como parâmetros o tipo de registrador a ser atualizado, o nome do registrador, o valor a ser inserido e uma string de identificação opcional para tamanho do dado podendo ser "word" ou "single".
+
+O tipo de dado pode ser "geral", "segment", "offset" ou "ram". Nos três primeiros casos o nome do registrador deverá ser o nome de uma de suas propriedades na cpu enquanto no último será o indice do registrador na ram
+
+#### As funções de fluxo
