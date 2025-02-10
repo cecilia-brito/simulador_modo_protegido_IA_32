@@ -25,7 +25,7 @@ const add = [
             //posição na ram
             codeSegment.base+cpu.offsetRegister.ip
         );
-        getLinearAddress("ip");
+       
         console.log("step 1")
         return false;
     },
@@ -88,7 +88,7 @@ const add = [
             dataSegment.base+cpu.offsetRegister.si
         );
         console.log("step 5")
-        getLinearAddress("si");
+       
         return false;
     },//step 6
     (setVisualRegister, cpuXram, getLinearAddress, cpu)=>{
@@ -161,9 +161,9 @@ const add = [
         let n2 = cpu.geralRegister.ebx.toString(2);
         let sum = cpu.geralRegister.eax + cpu.geralRegister.ebx;
         cpu.flag.carry = n1[0] == n2[0] && n1[0] == 1; 
-        setVisual("geral", "eax", cpu.geralRegister.eax);
         const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
         const linearAddress = getLinearAddress("di");
+        setVisual("geral", "eax", sum);
         cpuXram(
             `bus dados<br/>
             endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
@@ -176,12 +176,17 @@ const add = [
         cpu.geralRegister.eax = sum;
         setVisual("ram", linearAddress, cpu.geralRegister.eax);
         let twoComp = (cpu.geralRegister.eax>>>0).toString(2);
+        sum = sum.toString(2);
         cpu.flag.zero = twoComp == 0;
         let test_parity = twoComp;
         test_parity = test_parity.slice(test_parity.length - 8, test_parity.length - 1);
         cpu.flag.parity = test_parity == "11111111";
-        cpu.flag.overflow = (n1[0] == n2[0] && n2[0] == '-' && sum[0] != '-') || (n1[0] != '-' && n2[0] != '-' && sum[0] == '-')
-        cpu.flag.sign = twoComp[0]
+        cpu.flag.overflow = (n1[0] != '-' && n2[0] != '-' && sum[0] == '-') || (n1[0] != '-' && n2[0] != '-' && sum[0] == '-')
+        cpu.flag.sign =  twoComp[0]==="1"&&eax!==0;
+        console.log(sum)
+        console.log(n1)
+        console.log(n2)
+        console.log(cpu.flag)
         return true;
     }
 ];

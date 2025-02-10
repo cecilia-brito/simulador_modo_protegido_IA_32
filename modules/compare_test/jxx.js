@@ -80,7 +80,7 @@ const jxx = [
             `Endereço para o salto =  ${control.line[1]}<br/>`,
             codeSegment.base+cpu.offsetRegister.ip
         );
-        const linearAddress = getLinearAddress("ip");
+       
 		console.log('step 4')
         return false
 	},
