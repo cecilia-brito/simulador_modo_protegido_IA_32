@@ -101,7 +101,6 @@ const jxx = [
                     cpuXram(
                         
                         `Pulando para o endereço: ${showHexa(control.line[1])}`,
-
                         codeSegment.base+cpu.offsetRegister.ip
                     );
                 }
@@ -114,8 +113,6 @@ const jxx = [
 
                     setVisual("offset", "ip", dataAdress)
 					
-                    console.log(cpu)
-
                     cpuXram(
                         
                         `Pulando para o endereço: ${showHexa(control.line[1])}`,
