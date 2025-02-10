@@ -66,7 +66,7 @@ const cmp = [
 
     // Passo 3
     (setVisual, cpuXram, getLinearAddress, cpu) => {
-        sub[1](setVisual, cpuXram, getLinearAddress, cpu)
+        cmp[1](setVisual, cpuXram, getLinearAddress, cpu)
         console.log('p3')   
     },
 
@@ -122,7 +122,7 @@ const cmp = [
 
     // Passo 7
     (setVisual, cpuXram, getLinearAddress, cpu) => {
-        sub[1](setVisual, cpuXram, getLinearAddress, cpu)
+        cmp[1](setVisual, cpuXram, getLinearAddress, cpu)
     },
 
 
@@ -141,7 +141,7 @@ const cmp = [
 
     // Passo 9 (Request dos dados de SRC)
     (setVisual, cpuXram, getLinearAddress, cpu) => {
-        sub[5](setVisual, cpuXram, getLinearAddress, cpu)
+        cmp[5](setVisual, cpuXram, getLinearAddress, cpu)
     },
 
     // Passo 10

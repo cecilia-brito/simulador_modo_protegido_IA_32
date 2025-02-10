@@ -123,7 +123,7 @@ const push = [
         )
         
         setVisual("offset", "sp", cpu.offsetRegister.sp - 4);
-        setVisual("ram", getLinearAddress('sp'), data);
+        setVisual("ram", getLinearAddress('sp')+1, data);
         console.log("step 10")
         return true;
     }
