@@ -19,8 +19,8 @@ const mov = [
             const codeSegment = cpu.segmentTable[cs];
             cpuXram(
                 `bus endereço<br/>
-                endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.ip}<br/>
-                endereço linear = ${codeSegment.base + cpu.offsetRegister.ip}`,
+                endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+                endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
                 "request",
                 codeSegment.base+cpu.offsetRegister.ip
             );
@@ -116,8 +116,8 @@ const mov = [
     
             cpuXram(
                 `bus endereço<br/>
-                endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.si}<br/>
-                endereço linear = ${codeSegment.base + cpu.offsetRegister.si}`,
+                endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.si)}<br/>
+                endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.si)}`,
                 "request",
                 codeSegment.base+cpu.offsetRegister.si
             );
@@ -133,7 +133,7 @@ const mov = [
             
             cpuXram(
                 `bus dados<br/>
-                informações do endereço = ${data}`,
+                informações do endereço = ${showHexa(data)}`,
                 `get`,
     
                 codeSegment.base+cpu.offsetRegister.di
@@ -154,8 +154,8 @@ const mov = [
                 
                         cpuXram(
                             `bus endereço<br/>
-                            endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.di}<br/>
-                            endereço linear = ${codeSegment.base + cpu.offsetRegister.di}`,
+                            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+                            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.di)}`,
                             "request",
                             codeSegment.base+cpu.offsetRegister.di
                         );
@@ -188,7 +188,7 @@ const mov = [
             
                     cpuXram(
                         `bus dados<br/>
-                        informações do endereço = ${data}`,
+                        informações do endereço = ${showHexa(data)}`,
                         `request`,
             
                         codeSegment.base+cpu.offsetRegister.di
@@ -198,3 +198,7 @@ const mov = [
             },
         ];
 export default mov;
+
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}

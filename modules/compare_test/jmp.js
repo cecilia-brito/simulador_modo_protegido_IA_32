@@ -11,8 +11,8 @@ const jmp = [
         const codeSegment = cpu.segmentTable[cs];
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.ip}<br/> 
-            endereço linear = ${codeSegment.base + cpu.offsetRegister.ip}`, 
+            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/> 
+            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`, 
             "request",
             codeSegment.base+cpu.offsetRegister.ip
         );
@@ -37,16 +37,7 @@ const jmp = [
     },
     //step 3
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        const cs = cpu.segmentRegister.cs;
-        const codeSegment = cpu.segmentTable[cs];
-        const control = cpu.controlUnity
-
-        cpuXram(
-            `Endereço para o salto =  ${control.line[1]}<br/>`,
-            codeSegment.base+cpu.offsetRegister.ip
-        );
-        const linearAddress = getLinearAddress("ip");
-        return false
+        jmp[1](setVisual, cpuXram, getLinearAddress, cpu)
     },
     //step 4
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
@@ -56,7 +47,6 @@ const jmp = [
         const dataAdress = (parseInt(control.line[1], 16));
 
         setVisual("offset", "ip", dataAdress)
-        console.log(cpu)
 
         cpuXram(
             
@@ -69,3 +59,7 @@ const jmp = [
     
 ];
 export default jmp;
+
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}
