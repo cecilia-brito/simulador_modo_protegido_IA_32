@@ -172,9 +172,9 @@ const sub = [
             linearAddress
         )
         cpu.flag.zero = eax === 0
-        cpu.flag.zero = subtraction === 0
-        cpu.flag.sign = subtraction.toString(2)[0] === "1"
-        cpu.flag.overflow = resto !== subtraction
+        cpu.flag.zero = eax === 0
+        cpu.flag.sign = eax.toString(2)[0] === "1"
+        cpu.flag.overflow = resto !== eax
         return true
     }
 
