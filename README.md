@@ -48,6 +48,11 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
   ```assembly
   XOR OP1, OP2;
   ```
+- *NOT*
+  A instrução NOT realiza a operação lógica bit a bit. Ela possui 8 passos e utiliza os registradores CS, DS, EDI, ESI, EPI, EAX, além de modificar o registrador EFLAG.
+  ```assembly
+  NOT OP;
+  ```
 #### Aritmética
 
 - *ADD*
@@ -89,9 +94,22 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
    ```assembly
   MUL OP1, OP2;
   ```
+- *SUB*
+
+  A instrução SUB faz a seguinte operação: **DEST = DEST - SRC** e possui 12 passos. Ela utiliza os registradores CS, DS, EDI, ESI, EPI, EAX e EBX e também o registrador EFLAG.
+
+  ```assembly
+  ADD OP1, OP2;
+  ```
 
 #### Comparação e teste
+- *CMP*
 
+  A instrução CMP realiza o procedimento igual o procedimento `SUB`, entretando o mesmo não atualiza nenhum registrador, apenas altera as EFLAGS para ser usada no procedimento `JXX`.
+
+  ```assembly
+  CMP OP1, OP2
+  ```
 - *CALL*
 
   A instrução CALL realiza uma chamada para um procedimento e seta ip para o endereço informado na isntrução. Além disso, o endereço da instrução seguinte é armazanado no topo da pilha. O formato da instrução deve ser:
@@ -185,6 +203,13 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
   ```assembly
   PUSH OP1, OP2;
+  ```
+- *POP*
+
+  A instrução POP - `POP END` - incrementa 4 unidades do valor guardado no registrador ESP e coloca o valor guardado no topo da pilha para o DST. Utiliza os registradores ESP, EEPI, CS, DS, EESI, EEEDI,
+
+  ```
+  POP OP1;
   ```
 
 ## Para desenvolvedores
