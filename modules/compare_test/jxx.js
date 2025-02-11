@@ -77,30 +77,35 @@ const jxx = [
                 if(cpu.flag.zero == false && cpu.flag.sign == false){
                     return false;
                 }else{
+                    setVisual("offset", "ip", cpu.offsetRegister.ip+4)
                     return true;
                 }
             case "GE":
                 if(cpu.flag.sign == cpu.flag.overflow){
                     return false;
                 }else{
+                    setVisual("offset", "ip", cpu.offsetRegister.ip+4)
                     return true;
                 }
             case "E":
                 if(cpu.flag.zero == true){
                     return false;
                 }else{
+                    setVisual("offset", "ip", cpu.offsetRegister.ip+4)
                     return true;
                 }
             case "NE":
                 if(cpu.flag.zero == false){
                     return false;
                 }else{
+                    setVisual("offset", "ip", cpu.offsetRegister.ip+4)
                     return true;
                 }
             case "LE":
                 if(cpu.flag.zero == true || cpu.flag.sign != cpu.flag.overflow){
                    return false;
                 }else{
+                    setVisual("offset", "ip", cpu.offsetRegister.ip+4)
                     return true;
                 }
 
@@ -108,6 +113,7 @@ const jxx = [
                 if(cpu.flag.overflow != cpu.flag.sign){
 					return false;
 				}else{
+                    setVisual("offset", "ip", cpu.offsetRegister.ip+4)
                     return true;
                 }
             default:
