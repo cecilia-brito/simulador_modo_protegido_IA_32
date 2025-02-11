@@ -43,6 +43,7 @@ const pop = [
     },
     // Escrever em EAX os dados da pilha
     (setVisual, cpuXram, getLinearAddress, cpu) => {
+        const ram = cpu.ram
         const linearAddress = getLinearAddress('sp')
         setVisual('offset', 'sp', cpu.offsetRegister.sp+4);
         getLinearAddress('sp')
