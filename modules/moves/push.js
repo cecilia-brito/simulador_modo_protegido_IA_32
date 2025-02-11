@@ -12,8 +12,8 @@ const push = [
         cpuXram(
             //desc
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base.toString(16)} + ${cpu.offsetRegister.ip.toString(16)}<br/>
-            endereço linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(16)}`,
+            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -58,7 +58,7 @@ const push = [
         cpuXram(
             //desc
             `Bus Dados<br>`
-           +`${data.toString(16)}`,
+           +`${showHexa(data)}`,
             //request = "->"
             //get = "<-"
             //"" = [] (quadrado)
@@ -78,8 +78,8 @@ const push = [
         const dataSegment = cpu.segmentTable[ds];
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.si.toString(16)}<br/>
-            endereço linear = ${(dataSegment.base + cpu.offsetRegister.si).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.si)}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.si)}`,
             "request",
             dataSegment.base+cpu.offsetRegister.si
         );
@@ -97,7 +97,7 @@ const push = [
         console.log(linearAddress)
         cpuXram(
             `bus dados<br/>
-            dados: ${data.toString(16)}`,
+            dados: ${showHexa(data)}`,
             "get",
             codeSegment.base+cpu.offsetRegister.si
         );
@@ -107,25 +107,37 @@ const push = [
     },  // //step 7
 //step 10
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        const ram = cpu.ram;
-        const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
-        const linearAddress = getLinearAddress("si");
-        const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
         
-        console.log("data: '" +data);
+        const linearAddress = getLinearAddress("si");
+        const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
+        
         cpuXram(
             `bus dados<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${linearAddress.toString(16)}<br/>
-            dados: ${data.toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(linearAddress)}<br/>`,
             "request",
             linearAddress
         )
         
-        setVisual("offset", "sp", cpu.offsetRegister.sp - 4);
-        setVisual("ram", getLinearAddress('sp'), data);
         console.log("step 10")
+        return false;
+    },(setVisual, cpuXram, getLinearAddress, cpu)=>{
+        const ram = cpu.ram;
+       
+        const linearAddress = getLinearAddress("si");
+        const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
+        cpuXram(
+            `bus dados<br/>
+            dados: ${showHexa(data)}<br/>`,
+            "request",
+            linearAddress
+        )
+        setVisual("offset", "sp", cpu.offsetRegister.sp - 4);
+        setVisual("ram", getLinearAddress('sp')+1, data);
         return true;
     }
 ];
 export default push;
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}

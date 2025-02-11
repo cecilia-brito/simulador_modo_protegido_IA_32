@@ -45,8 +45,13 @@ const instructionList = {
     pop,
     push,
     xchg,
-    algo:[(line)=>line],
 };
+
+const ramValues = {
+    start: 0,
+    visible: 30,
+    size: 0x1000,
+}
 
 // Criação do objeto 
 const cpu = {
@@ -75,7 +80,7 @@ const cpu = {
     controlUnity:{
         instruction: "",
         step: 0,
-        code: [],
+        code: {},
         line: [],
     },
     segmentTable:{
@@ -95,7 +100,7 @@ const cpu = {
             access:0b11,
         },
     },
-    ram: Array(0x1000).fill(0),
+    ram: Array(ramValues.size).fill(0),
 };
 
 // Guardando a referência de elementos importantes do html
@@ -128,23 +133,30 @@ function setVisualRegister(type, register, value, amount="word"){
                     cpu.ram[register+i] = resto;
                     document.getElementById(`ram-${register+i}`).value = (resto>>>0).toString(16).padStart(2,"0");
                     const label = document.getElementById(`ram-label-${register+i}`);
-                    label.classList.add("highlight");
-                    highlighted.push(label);
+                    if(label){
+                        label.classList.add("highlight");
+                        highlighted.push(label);
+                    }
                     value = value >>> 8;
                 }else{
                     cpu.ram[register+i] = value;
                     document.getElementById(`ram-${register+i}`).value = value;
                     const label = document.getElementById(`ram-label-${register+i}`);
-                    label.classList.add("highlight");
-                    highlighted.push(label);
+                    if(label){
+                        label.classList.add("highlight");
+                        highlighted.push(label);
+                    }
                 }
             }
         }else if(amount==="single"){
             document.getElementById(`ram-${register}`).value = value.toString(16).padStart(2,"0");
             cpu.ram[register] = value;
             const label = document.getElementById(`ram-label-${register}`);
-            label.classList.add("highlight");
-            highlighted.push(label);
+            if(label){
+
+                label.classList.add("highlight");
+                highlighted.push(label);
+            }
         }
         searchRam((register+3).toString(16));  
     }else{
@@ -152,14 +164,16 @@ function setVisualRegister(type, register, value, amount="word"){
         cpu[type+"Register"][register] = value;
         valueTo16 = valueTo16.padStart(type==="segment"?4:8, '0');
         const registerInput = document.getElementById(register);
-        registerInput.value = valueTo16;    
-        registerInput.classList.add("highlight");
+        if(registerInput){
+            registerInput.value = valueTo16;    
+            registerInput.classList.add("highlight");
+        }
         highlighted.push(registerInput);
     }
 };
 
 // Função responsável por alterar visualmente a área entre os dados do registradores e a tabela da ram.
-function cpuXram(desc, type, data){
+function cpuXram(desc, type, data, dataType = ""){
     busText.innerHTML = desc;
     switch(type){
         case "request":
@@ -173,7 +187,7 @@ function cpuXram(desc, type, data){
             break;
     };
     if(typeof data === "number"){
-        searchRam(data.toString(16));
+        searchRam(data.toString(16), dataType);
     };
 };
 
@@ -231,13 +245,15 @@ async function start(){
             const validLine = checkLine(singleLine);
             if(validLine){
                 const size =validLine.reduce((ant, str, i)=>{
+                    if(validLine[0].toLowerCase()==="jxx" && i===2) return ant;
+                    const isArbitrary = str[0]==="#"||Object.keys(cpu.geralRegister).includes(str.toLowerCase());
                     setVisualRegister(
                         "ram",
                         prev+ant,
-                        i===0?str:parseInt(str,16),
-                        i===0||str.length!==2   ?"word":"single"
+                        i===0||isArbitrary?str:parseInt(str,16),
+                        i===0||str.length!==2||isArbitrary  ?"word":"single"
                     );
-                    return ant+(i>0&&str.length===2?1:4);
+                    return ant+(i>0&&!isArbitrary&&str.length===2?1:4);
                 }, 0);
                 lineList[prev] = {
                     number:i,
@@ -249,6 +265,7 @@ async function start(){
             console.log(singleLine);
             throw new Error(i+1);
         }, base);
+        console.log(cpu)
         await changeRamEdit(false);
         //lineList será o objeto com todas as linhas selecionadas por sua posição na memória.
         cpu.controlUnity.code = lineList;
@@ -257,7 +274,7 @@ async function start(){
         //Essa será a instrução (primeiro elemento da linha), da primeira linha.
         cpu.controlUnity.instruction = cpu.controlUnity.line[0];
         cpu.controlUnity.step = 1;
-        changeRegisterEdit(false);
+        changeRegisterEdit(true);
         return true;
     }catch(e){
         codeInput.contentEditable = true;
@@ -310,7 +327,7 @@ clockButton.onclick = clock;
 
 async function end(){
     await changeRamEdit(true);
-    changeRegisterEdit(true);
+    changeRegisterEdit(false);
     setVisualRegister("offset", "ip", 0);
     emptyHighlighted();
     codeInput.contentEditable = true;
@@ -351,15 +368,18 @@ async function changeRamEdit(edit){
 };
 
 //scrolla a tela até a posição informada da ram estar visível.
-function searchRam(input){
+function searchRam(input, type = ""){
     const input16 = parseInt(input, 16);
     if(input16 !== NaN && input16 < cpu.ram.length){
         input = input16;
         document.getElementById(`ram-${input}`).scrollIntoView();
-        for(let i = 0; i < 4; i++){
+        const limit = type==="single"?1:4;
+        for(let i = 0; i < limit; i++){
             const label = document.getElementById(`ram-label-${input+i}`);
-            label.classList.add("highlight");
-            highlighted.push(label);
+            if(label){
+                label.classList.add("highlight");
+                highlighted.push(label);
+            }
         }
     }else{
         alert("Endereço inválido");
@@ -552,10 +572,13 @@ function ramEdit(e){
 const codeLineRegex = /^(\w+)[\s^\n]*(( ([0-9a-fA-F]{2,8}|e[abcd]x|#[0-9]+)[\s^\n]*((,[\s^\n]+([0-9a-fA-F]{8}|e[abcd]x|#[0-9]+)[\s^\n]*(;.*)?)|(;.*))?)|(;.*))?$/gi;
 function checkLine(line){
     let lineMatch = [...line.matchAll(codeLineRegex)];
-    if(lineMatch.length && instructionList[lineMatch[0][1].toLowerCase()]){
+    if(lineMatch.length && (instructionList[lineMatch[0][1].toLowerCase()] || lineMatch[0][1][0].toLowerCase()==="j")){
         lineMatch = lineMatch[0];
+        const instructionToMatch = lineMatch[1][0].toLowerCase()==="j" && lineMatch[1].toLowerCase() !== "jmp"?
+        "jxx"
+        :lineMatch[1].toLowerCase()
         lineMatch = [lineMatch[1].toLowerCase(), lineMatch[4], lineMatch[7]];
-        return instructionList[lineMatch[0]][0](lineMatch);
+        return instructionList[instructionToMatch][0](lineMatch);
     }else if(line==="")return[];
 }
 

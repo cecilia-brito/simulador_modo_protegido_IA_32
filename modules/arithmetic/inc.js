@@ -11,8 +11,8 @@ const inc = [
         const codeSegment = cpu.segmentTable[cs];
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.ip}<br/>
-            endereço linear = ${codeSegment.base + cpu.offsetRegister.ip}`,
+            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
             "request",
             codeSegment.base+cpu.offsetRegister.ip
         );
@@ -44,8 +44,8 @@ const inc = [
 
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.ip}<br/>
-            endereço linear = ${codeSegment.base + cpu.offsetRegister.ip}`,
+            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
             "request",
             codeSegment.base+cpu.offsetRegister.ip
         );
@@ -79,8 +79,8 @@ const inc = [
 
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.si}<br/>
-            endereço linear = ${codeSegment.base + cpu.offsetRegister.si}`,
+            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.si)}<br/>
+            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.si)}`,
             "request",
             codeSegment.base+cpu.offsetRegister.si
         );
@@ -97,13 +97,12 @@ const inc = [
 
         cpuXram(
             `bus dados<br/>
-            informações do endereço = ${data}`,
+            informações do endereço = ${showHexa(data)}`,
             `get`,
 
             codeSegment.base+cpu.offsetRegister.si
         );
         setVisual("geral", "eax", data)
-        setVisual("ram", linearAddress, data + 1)
         return false
     },
     //step 7
@@ -111,16 +110,16 @@ const inc = [
         const control = cpu.controlUnity
         const dataAdress = (parseInt(control.line[1]));
         setVisual("offset", "di", dataAdress)
-
+        
         const ds = cpu.segmentRegister.ds;
         const codeSegment = cpu.segmentTable[ds];
-
+        
         const linearAddress = getLinearAddress("di");
-
+        
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${codeSegment.base} + ${cpu.offsetRegister.di}<br/>
-            endereço linear = ${codeSegment.base + cpu.offsetRegister.di}`,
+            endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.di)}`,
             "request",
             codeSegment.base+cpu.offsetRegister.di
         );
@@ -131,18 +130,27 @@ const inc = [
         const ds = cpu.segmentRegister.ds;
         const codeSegment = cpu.segmentTable[ds];
         const ram = cpu.ram
-
+        
         const linearAddress = getLinearAddress("di");
         const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
+        setVisual("ram", linearAddress, data + 1)
+        const data2 = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
 
         cpuXram(
             `bus dados<br/>
-            informações do endereço = ${data}`,
+            informações do endereço = ${showHexa(data2)}`,
             `get`,
 
             codeSegment.base+cpu.offsetRegister.si
         );
+        const flag = cpu.flag
+        flag.zero = data === 0
+        flag.sign = data < 0
         return true
     },
 ];
 export default inc;
+
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}

@@ -15,8 +15,8 @@ const xor = [
     const codeSegment = cpu.segmentTable[cs];
     cpuXram(
       `bus endereço<br/>
-        endereço linear = ${codeSegment.base.toString(16)} + ${cpu.offsetRegister.ip.toString(16)}<br/>
-        endereço linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(16)}`,
+        endereço linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+        endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
       "request",
       codeSegment.base + cpu.offsetRegister.ip
     );
@@ -61,12 +61,8 @@ const xor = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(
-              16
-            )} + ${cpu.offsetRegister.si.toString(16)}<br/>
-            endereço linear = ${(
-              dataSegment.base + cpu.offsetRegister.si
-            ).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.si)}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.si)}`,
       "request",
       dataSegment.base + cpu.offsetRegister.si
     );
@@ -84,7 +80,7 @@ const xor = [
       ram[linearAddress];
     cpuXram(
       `bus dados<br/>
-            dados: ${data}`,
+            dados: ${showHexa(data)}`,
       "get",
       linearAddress
     );
@@ -116,12 +112,10 @@ const xor = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(
-              16
-            )} + ${cpu.offsetRegister.si.toString(16)}<br/>
-            endereço linear = ${(
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.si)}<br/>
+            endereço linear = ${showHexa(
               dataSegment.base + cpu.offsetRegister.si
-            ).toString(16)}`,
+            )}`,
       "request",
       dataSegment.base + cpu.offsetRegister.si
     );
@@ -139,7 +133,7 @@ const xor = [
       ram[linearAddress];
     cpuXram(
       `bus dados<br/>
-            dados: ${data}`,
+            dados: ${showHexa(data)}`,
       "get",
       linearAddress
     );
@@ -152,8 +146,8 @@ const xor = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.di)}`,
       "request",
       dataSegment.base + cpu.offsetRegister.di
     );
@@ -169,7 +163,7 @@ const xor = [
     const linearAddress = getLinearAddress("di");
     cpuXram(
       `bus dados<br/>
-        dados: ${cpu.geralRegister.eax.toString(16)}`,
+        dados: ${showHexa(cpu.geralRegister.eax)}`,
       "request",
       linearAddress
     );
@@ -178,3 +172,7 @@ const xor = [
   },
 ];
 export default xor;
+
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}

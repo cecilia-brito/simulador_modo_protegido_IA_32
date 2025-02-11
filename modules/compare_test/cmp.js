@@ -40,8 +40,8 @@ const cmp = [
         const codeSegment = cpu.segmentTable[cs]
         cpuXram(
             `bus endereço<br/>
-            end. linear = ${codeSegment.base.toString(16) + cpu.offsetRegister.ip.toString(16)}<br/>
-            end. linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(16)}`,
+            end. linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+            end. linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
             'request',
             codeSegment.base + cpu.offsetRegister.ip
         )
@@ -55,7 +55,7 @@ const cmp = [
         const linearAddress = getLinearAddress('ip')
         cpuXram(
             `bus dado<br/>
-            dado: SUB`,
+            dado: CMP`,
             'get',
             linearAddress
         )   
@@ -66,7 +66,7 @@ const cmp = [
 
     // Passo 3
     (setVisual, cpuXram, getLinearAddress, cpu) => {
-        sub[1](setVisual, cpuXram, getLinearAddress, cpu)
+        cmp[1](setVisual, cpuXram, getLinearAddress, cpu)
         console.log('p3')   
     },
 
@@ -92,8 +92,8 @@ const cmp = [
         const dataSegment = cpu.segmentTable[ds]
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.si.toString(16)}<br/>
-            endereço linear = ${(dataSegment.base + cpu.offsetRegister.si).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.si)}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.si)}`,
             "request",
             dataSegment.base + cpu.offsetRegister.si
         )
@@ -112,7 +112,7 @@ const cmp = [
             ram[linearAddress]
         cpuXram(
             `bus dados<br/>
-            dados ${data}`,
+            dados ${showHexa(data)}`,
             'get',
             linearAddress
         )
@@ -122,7 +122,7 @@ const cmp = [
 
     // Passo 7
     (setVisual, cpuXram, getLinearAddress, cpu) => {
-        sub[1](setVisual, cpuXram, getLinearAddress, cpu)
+        cmp[1](setVisual, cpuXram, getLinearAddress, cpu)
     },
 
 
@@ -141,7 +141,7 @@ const cmp = [
 
     // Passo 9 (Request dos dados de SRC)
     (setVisual, cpuXram, getLinearAddress, cpu) => {
-        sub[5](setVisual, cpuXram, getLinearAddress, cpu)
+        cmp[5](setVisual, cpuXram, getLinearAddress, cpu)
     },
 
     // Passo 10
@@ -155,7 +155,7 @@ const cmp = [
             ram[linearAddress]
         cpuXram(
             `bus dados<br/>
-            dados ${data}`,
+            dados ${showHexa(data)}`,
             'get',
             linearAddress
         )
@@ -168,8 +168,8 @@ const cmp = [
         const dataSegment = cpu.segmentTable[ds]
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.di)}`,
             'request',
             dataSegment.base + cpu.offsetRegister.di
         )
@@ -179,19 +179,24 @@ const cmp = [
 
     // Passo 12
     (setVisual, cpuXram, getLinearAddress, cpu) => {
-        const eax = cpu.geralRegister.eax;
-        const ebx = cpu.geralRegister.ebx;
-        let subtraction = eax - ebx;
+        const eax = cpu.geralRegister.eax
+        const ebx = cpu.geralRegister.ebx
+        let subtraction = eax - ebx
+        let resto = (subtraction>>>0)%0x100000000
         const linearAddress = getLinearAddress('di')
         cpuXram(
             `bus dados <br/>
-            dado: ${cpu.geralRegister.eax.toString(16)}`,
+            dado: ${showHexa(cpu.geralRegister.eax)}`,
             'request',
             linearAddress
         )
         cpu.flag.zero = subtraction === 0
         cpu.flag.sign = subtraction.toString(2)[0] === "1"
+        cpu.flag.overflow = resto !== subtraction
         return true
     }
 ];
 export default cmp;
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}
