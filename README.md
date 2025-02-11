@@ -18,7 +18,12 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
 ### Interface
 
+![Print do site. O site está divido em 4 seções sendo a principal um grande campo onde o usuário deve inserir seu código, abaixo do campo há 3 botões: set; end; auto. Abaixo dos botões há uma tabela que representa a tabela de descritores de segmento ao lado do campo de código estão os registradores gerais e de offeset e ao lado à direita há um espaço onde irá aparecer o fluxo de barramento e ao lado à direita há a memória ram que é representada por uma grande tabela de 2 campos: valor, endereço. Há um input acima da RAM para pesquisar seu conteúdo.](image.png)
+
 ### Fluxo de execução
+
+![Print da interface destacando o fluxo de barramento. O texto escrito na seção de fluxo é:"bus dados
+dados: 33333333→"](<WhatsApp Image 2025-02-10 at 21.48.12.jpeg>)
 
 ### Exemplos de instruções
 
