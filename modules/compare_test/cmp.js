@@ -40,8 +40,8 @@ const cmp = [
         const codeSegment = cpu.segmentTable[cs]
         cpuXram(
             `bus endereço<br/>
-            end. linear = ${codeSegment.base.toString(16) + cpu.offsetRegister.ip.toString(16)}<br/>
-            end. linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(16)}`,
+            end. linear = ${showHexa(codeSegment.base)} + ${showHexa(cpu.offsetRegister.ip)}<br/>
+            end. linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
             'request',
             codeSegment.base + cpu.offsetRegister.ip
         )
@@ -92,8 +92,8 @@ const cmp = [
         const dataSegment = cpu.segmentTable[ds]
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.si.toString(16)}<br/>
-            endereço linear = ${(dataSegment.base + cpu.offsetRegister.si).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.si)}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.si)}`,
             "request",
             dataSegment.base + cpu.offsetRegister.si
         )
@@ -112,7 +112,7 @@ const cmp = [
             ram[linearAddress]
         cpuXram(
             `bus dados<br/>
-            dados ${data}`,
+            dados ${showHexa(data)}`,
             'get',
             linearAddress
         )
@@ -155,7 +155,7 @@ const cmp = [
             ram[linearAddress]
         cpuXram(
             `bus dados<br/>
-            dados ${data}`,
+            dados ${showHexa(data)}`,
             'get',
             linearAddress
         )
@@ -168,8 +168,8 @@ const cmp = [
         const dataSegment = cpu.segmentTable[ds]
         cpuXram(
             `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${(dataSegment.base + cpu.offsetRegister.di).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.di)}`,
             'request',
             dataSegment.base + cpu.offsetRegister.di
         )
@@ -186,7 +186,7 @@ const cmp = [
         const linearAddress = getLinearAddress('di')
         cpuXram(
             `bus dados <br/>
-            dado: ${cpu.geralRegister.eax.toString(16)}`,
+            dado: ${showHexa(cpu.geralRegister.eax)}`,
             'request',
             linearAddress
         )
@@ -197,3 +197,6 @@ const cmp = [
     }
 ];
 export default cmp;
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}
