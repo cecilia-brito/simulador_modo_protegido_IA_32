@@ -179,6 +179,13 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
   ```assembly
   PUSH OP;
   ```
+- *XCHG*
+
+  Troca os valores armazenados entre dois endereços de memória.
+
+  ```assembly
+  PUSH OP1, OP2;
+  ```
 
 ## Para desenvolvedores
 
