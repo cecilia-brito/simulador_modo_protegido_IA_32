@@ -246,13 +246,14 @@ async function start(){
             if(validLine){
                 const size =validLine.reduce((ant, str, i)=>{
                     if(validLine[0].toLowerCase()==="jxx" && i===2) return ant;
+                    const isArbitrary = str[0]==="#"||Object.keys(cpu.geralRegister).includes(str.toLowerCase());
                     setVisualRegister(
                         "ram",
                         prev+ant,
-                        i===0?str:parseInt(str,16),
-                        i===0||str.length!==2   ?"word":"single"
+                        i===0||isArbitrary?str:parseInt(str,16),
+                        i===0||str.length!==2||isArbitrary  ?"word":"single"
                     );
-                    return ant+(i>0&&str.length===2?1:4);
+                    return ant+(i>0&&!isArbitrary&&str.length===2?1:4);
                 }, 0);
                 lineList[prev] = {
                     number:i,
@@ -264,6 +265,7 @@ async function start(){
             console.log(singleLine);
             throw new Error(i+1);
         }, base);
+        console.log(cpu)
         await changeRamEdit(false);
         //lineList será o objeto com todas as linhas selecionadas por sua posição na memória.
         cpu.controlUnity.code = lineList;
