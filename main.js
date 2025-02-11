@@ -187,7 +187,6 @@ function cpuXram(desc, type, data, dataType = ""){
             break;
     };
     if(typeof data === "number"){
-        console.log(data)
         searchRam(data.toString(16), dataType);
     };
 };
