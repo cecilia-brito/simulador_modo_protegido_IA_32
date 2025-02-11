@@ -99,12 +99,23 @@ const dec = [
     cpuXram(
       `bus dados<br/>
         endereço linear = ${dataSegment.base} + ${cpu.offsetRegister.di}<br/>
-        endereço linear = ${linearAddress}<br/>
-        dados: ${cpu.geralRegister.eax.toString(16)}`,
+        endereço linear = ${linearAddress}<br/>`,
       "request",
       linearAddress
     );
-    setVisual("ram", linearAddress, parseInt(twoComp, 2));
+  },
+  //step 8
+  (setVisual, cpuXram, getLinearAddress, cpu) => {
+    const linearAddress = getLinearAddress("di");
+    cpuXram(
+      `bus dados<br/>
+        dados: ${cpu.geralRegister.eax.toString(16)}
+      `,
+      "request",
+      linearAddress
+    );
+    const eax = cpu.geralRegister.eax
+    setVisual("ram", linearAddress, eax);
     return true;
   },
 ];
