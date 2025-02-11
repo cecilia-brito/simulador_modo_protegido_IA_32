@@ -1,7 +1,11 @@
 //MUL DST        Multiply DST by EAX
 const mul = [
   (line) => {
-    if (line[0] !== undefined && line[1] !== undefined && line[2] === undefined) {
+    if (
+      line[0] !== undefined &&
+      line[1] !== undefined &&
+      line[2] === undefined
+    ) {
       return [line[0], line[1]];
     }
   },
@@ -14,7 +18,9 @@ const mul = [
         endereço linear = ${codeSegment.base.toString(
           16
         )} + ${cpu.offsetRegister.ip.toString(16)}<br/>
-        endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
+        endereço linear = ${showHexa(
+          codeSegment.base + cpu.offsetRegister.ip
+        )}`,
       "request",
       codeSegment.base + cpu.offsetRegister.ip
     );
@@ -54,8 +60,12 @@ const mul = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
-            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
-            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.di)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(
+        cpu.offsetRegister.di
+      )}<br/>
+            endereço linear = ${showHexa(
+              dataSegment.base + cpu.offsetRegister.di
+            )}`,
       "request",
       dataSegment.base + cpu.offsetRegister.di
     );
@@ -83,18 +93,30 @@ const mul = [
     const eax = cpu.geralRegister.eax;
     const ebx = cpu.geralRegister.ebx; // Operando fonte vindo do array
     const result = (eax * ebx).toString(16).padStart(16, "0");
-    console.log(result)
-    cpu.geralRegister.eax = parseInt(result.slice(-8),16) // Menos significativos
-    cpu.geralRegister.edx = parseInt(result.slice(0, 8),16); // Mais significativos
+    console.log(result);
+    cpu.geralRegister.eax = parseInt(result.slice(-8), 16); // Menos significativos
+    cpu.geralRegister.edx = parseInt(result.slice(0, 8), 16); // Mais significativos
     setVisual("geral", "eax", cpu.geralRegister.eax);
     setVisual("geral", "edx", cpu.geralRegister.edx);
     const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
     const linearAddress = getLinearAddress("di");
     cpuXram(
       `bus dados<br/>
-        endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
-        endereço linear = ${showHexa(linearAddress)}<br/>
-        dados: ${showHexa(cpu.geralRegister.eax)}`,
+        endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(
+        cpu.offsetRegister.di
+      )}<br/>
+        endereço linear = ${showHexa(linearAddress)}<br/>`,
+      "request",
+      linearAddress
+    );
+  },
+
+  //step 8
+  (setVisual, cpuXram, getLinearAddress, cpu) => {
+    const linearAddress = getLinearAddress("di");
+    cpuXram(
+      `bus dados<br/>
+      dados: ${showHexa(cpu.geralRegister.eax)}`,
       "request",
       linearAddress
     );
@@ -102,8 +124,7 @@ const mul = [
     if (cpu.geralRegister.edx !== 0) {
       cpu.flag.overflow = true;
       cpu.flag.carry = true;
-    }
-    else {
+    } else {
       cpu.flag.overflow = false;
       cpu.flag.carry = false;
     }
@@ -113,6 +134,6 @@ const mul = [
 
 export default mul;
 
-function showHexa(value, pad = 8){
-    return value.toString(16).padStart(pad, "0");
+function showHexa(value, pad = 8) {
+  return value.toString(16).padStart(pad, "0");
 }
