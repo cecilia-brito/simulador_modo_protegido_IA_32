@@ -164,6 +164,7 @@ const sub = [
     (setVisual, cpuXram, getLinearAddress, cpu) => {
         const linearAddress = getLinearAddress('di')
         const eax = cpu.geralRegister.eax;
+        const resto = eax % 0x100000000
         setVisual("ram", linearAddress, eax);
         cpuXram(
             `bus dados <br/>
