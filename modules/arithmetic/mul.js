@@ -14,9 +14,7 @@ const mul = [
         endereço linear = ${codeSegment.base.toString(
           16
         )} + ${cpu.offsetRegister.ip.toString(16)}<br/>
-        endereço linear = ${(codeSegment.base + cpu.offsetRegister.ip).toString(
-          16
-        )}`,
+        endereço linear = ${showHexa(codeSegment.base + cpu.offsetRegister.ip)}`,
       "request",
       codeSegment.base + cpu.offsetRegister.ip
     );
@@ -56,12 +54,8 @@ const mul = [
     const dataSegment = cpu.segmentTable[ds];
     cpuXram(
       `bus endereço<br/>
-            endereço linear = ${dataSegment.base.toString(
-              16
-            )} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${(
-              dataSegment.base + cpu.offsetRegister.di
-            ).toString(16)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(dataSegment.base + cpu.offsetRegister.di)}`,
       "request",
       dataSegment.base + cpu.offsetRegister.di
     );
@@ -78,7 +72,7 @@ const mul = [
       ram[linearAddress];
     cpuXram(
       `bus dados<br/>
-            dados: ${data}`,
+            dados: ${showHexa(data)}`,
       "get",
       linearAddress
     );
@@ -98,9 +92,9 @@ const mul = [
     const linearAddress = getLinearAddress("di");
     cpuXram(
       `bus dados<br/>
-        endereço linear = ${dataSegment.base} + ${cpu.offsetRegister.di}<br/>
-        endereço linear = ${linearAddress}<br/>
-        dados: ${cpu.geralRegister.eax.toString(16)}`,
+        endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+        endereço linear = ${showHexa(linearAddress)}<br/>
+        dados: ${showHexa(cpu.geralRegister.eax)}`,
       "request",
       linearAddress
     );
@@ -118,3 +112,7 @@ const mul = [
 ];
 
 export default mul;
+
+function showHexa(value, pad = 8){
+    return value.toString(16).padStart(pad, "0");
+}
