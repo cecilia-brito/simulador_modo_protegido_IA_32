@@ -157,22 +157,35 @@ const add = [
         return false;
     },//step 10
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        let n1 = cpu.geralRegister.eax.toString(2);
-        let n2 = cpu.geralRegister.ebx.toString(2);
-        let sum = cpu.geralRegister.eax + cpu.geralRegister.ebx;
-        cpu.flag.carry = n1[0] == n2[0] && n1[0] == 1; 
+       
         const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
         const linearAddress = getLinearAddress("di");
-        setVisual("geral", "eax", sum);
+        
         cpuXram(
             `bus dados<br/>
             endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
-            endereço linear = ${showHexa(linearAddress)}<br/>
-            dados: ${showHexa(sum)}`,
+            endereço linear = ${showHexa(linearAddress)}<br/>`,
             "request",
             linearAddress
         )
         console.log("step 10");
+        
+        return false;
+    },(setVisual, cpuXram, getLinearAddress, cpu)=>{
+        const linearAddress = getLinearAddress("di");
+        let n1 = cpu.geralRegister.eax.toString(2);
+        let n2 = cpu.geralRegister.ebx.toString(2);
+        let sum = cpu.geralRegister.eax + cpu.geralRegister.ebx;
+        setVisual("geral", "eax", sum);
+        cpu.flag.carry = n1[0] == n2[0] && n1[0] == 1; 
+       
+        cpuXram(
+            `bus dados<br/>
+            dados: ${showHexa(sum)}`,
+            "request",
+            linearAddress
+        )
+
         cpu.geralRegister.eax = sum;
         setVisual("ram", linearAddress, cpu.geralRegister.eax);
         let twoComp = (cpu.geralRegister.eax>>>0).toString(2);
@@ -187,8 +200,6 @@ const add = [
         console.log(n1)
         console.log(n2)
         console.log(cpu.flag)
-        return false;
-    },(setVisual, cpuXram, getLinearAddress, cpu)=>{
         return true;
     }
 ];

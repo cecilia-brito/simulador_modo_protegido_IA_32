@@ -41,6 +41,13 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 ```assembly
   OR OP1, OP2;
   ```
+- *XOR*
+  
+  Realiza a operação de "disjunção exclusiva" entre dois operandos, armazenando o resultado no primeiro operando.
+
+  ```assembly
+  XOR OP1, OP2;
+  ```
 #### Aritmética
 
 - *ADD*
@@ -66,6 +73,21 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
   ```assembly
   NEG OP1;
+  ```
+- *DEC*
+
+  Seleciona um endereço de memória e diminui o valor armazenado em uma unidade.
+
+  ```assembly
+  DEC OP1;
+  ```
+
+- *MUL*
+
+  Seleciona um endereço de memória e multiplica seu valor pelo valor armazenado em EAX, em seguida armazenando os bits menos significativos do resultado em EAX, enquanto os bits mais significativos são armazenados em EDX. Essa instrução afeta as flags de Overflow e de Carry.
+
+   ```assembly
+  MUL OP1, OP2;
   ```
 
 #### Comparação e teste
@@ -156,6 +178,13 @@ Se deseja simplesmente testar suas funcionalidades, acesse o [>site<](https://gi
 
   ```assembly
   PUSH OP;
+  ```
+- *XCHG*
+
+  Troca os valores armazenados entre dois endereços de memória.
+
+  ```assembly
+  PUSH OP1, OP2;
   ```
 
 ## Para desenvolvedores

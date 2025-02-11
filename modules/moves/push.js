@@ -107,24 +107,33 @@ const push = [
     },  // //step 7
 //step 10
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        const ram = cpu.ram;
-        const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
-        const linearAddress = getLinearAddress("si");
-        const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
         
-        console.log("data: '" +data);
+        const linearAddress = getLinearAddress("si");
+        const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
+        
         cpuXram(
             `bus dados<br/>
-            endereço linear = ${dataSegment.base.toString(16)} + ${cpu.offsetRegister.di.toString(16)}<br/>
-            endereço linear = ${linearAddress.toString(16)}<br/>
-            dados: ${showHexa(data)}`,
+            endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
+            endereço linear = ${showHexa(linearAddress)}<br/>`,
             "request",
             linearAddress
         )
         
+        console.log("step 10")
+        return false;
+    },(setVisual, cpuXram, getLinearAddress, cpu)=>{
+        const ram = cpu.ram;
+       
+        const linearAddress = getLinearAddress("si");
+        const data = ram[linearAddress+3]*0x1000000 + ram[linearAddress+2]*0x10000 + ram[linearAddress+1]*0x100 + ram[linearAddress];
+        cpuXram(
+            `bus dados<br/>
+            dados: ${showHexa(data)}<br/>`,
+            "request",
+            linearAddress
+        )
         setVisual("offset", "sp", cpu.offsetRegister.sp - 4);
         setVisual("ram", getLinearAddress('sp')+1, data);
-        console.log("step 10")
         return true;
     }
 ];

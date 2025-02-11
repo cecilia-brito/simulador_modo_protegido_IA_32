@@ -153,21 +153,29 @@ const or  = [
         return false;
     },//step 10
     (setVisual, cpuXram, getLinearAddress, cpu)=>{
-        cpu.geralRegister.eax = cpu.geralRegister.eax | cpu.geralRegister.ebx
-        setVisual("geral", "eax", cpu.geralRegister.eax);
+       
+        
         const dataSegment = cpu.segmentTable[cpu.segmentRegister.ds];
         const linearAddress = getLinearAddress("di");
         cpuXram(
             `bus dados<br/>
             endereço linear = ${showHexa(dataSegment.base)} + ${showHexa(cpu.offsetRegister.di)}<br/>
-            endereço linear = ${showHexa(linearAddress)}<br/>
+            endereço linear = ${showHexa(linearAddress)}<br/>`,
+            "request",
+            linearAddress
+        )
+        
+        return false;
+    }, (setVisual, cpuXram, getLinearAddress, cpu) => {
+        const linearAddress = getLinearAddress("di");
+        cpu.geralRegister.eax = cpu.geralRegister.eax | cpu.geralRegister.ebx
+        cpuXram(
+            `bus dados<br/>
             dados: ${showHexa(cpu.geralRegister.eax)}`,
             "request",
             linearAddress
         )
-//         Flags Affected
-// The OF and CF flags are cleared; the SF, ZF, and PF flags are set according to the result. The state of the AF flag is
-// undefined
+        setVisual("geral", "eax", cpu.geralRegister.eax);
         cpu.flag.overflow =  false;
         cpu.flag.carry = false;
         cpu.flag.zero = cpu.geralRegister == 0;
