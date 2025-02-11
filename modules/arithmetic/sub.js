@@ -139,9 +139,9 @@ const sub = [
             linearAddress
         )
         setVisual('geral', 'ebx', data)
-        const eax = cpu.geralRegister.eax;
-        const ebx = cpu.geralRegister.ebx;
-        let subtraction = ebx - eax;
+        const eax = cpu.geralRegister.eax
+        const ebx = cpu.geralRegister.ebx
+        let subtraction = ebx - eax
         setVisual('geral', 'eax', subtraction)
     },
 
@@ -171,7 +171,10 @@ const sub = [
             'request',
             linearAddress
         )
-        cpu.flag.zero = eax === 0;
+        cpu.flag.zero = eax === 0
+        cpu.flag.zero = subtraction === 0
+        cpu.flag.sign = subtraction.toString(2)[0] === "1"
+        cpu.flag.overflow = resto !== subtraction
         return true
     }
 

@@ -55,7 +55,7 @@ const cmp = [
         const linearAddress = getLinearAddress('ip')
         cpuXram(
             `bus dado<br/>
-            dado: SUB`,
+            dado: CMP`,
             'get',
             linearAddress
         )   
@@ -179,9 +179,10 @@ const cmp = [
 
     // Passo 12
     (setVisual, cpuXram, getLinearAddress, cpu) => {
-        const eax = cpu.geralRegister.eax;
-        const ebx = cpu.geralRegister.ebx;
-        let subtraction = eax - ebx;
+        const eax = cpu.geralRegister.eax
+        const ebx = cpu.geralRegister.ebx
+        let subtraction = eax - ebx
+        let resto = (subtraction>>>0)%0x100000000
         const linearAddress = getLinearAddress('di')
         cpuXram(
             `bus dados <br/>
@@ -191,6 +192,7 @@ const cmp = [
         )
         cpu.flag.zero = subtraction === 0
         cpu.flag.sign = subtraction.toString(2)[0] === "1"
+        cpu.flag.overflow = resto !== subtraction
         return true
     }
 ];
